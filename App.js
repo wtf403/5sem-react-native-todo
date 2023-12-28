@@ -9,8 +9,8 @@ import {
   FlatList,
 } from "react-native";
 import DateTimePicker from "react-native-ui-datepicker";
-import Select from "./components/Select";
-import Filed from "./components/Field";
+import Select from "./components/Select.js";
+import Filed from "./components/Field.js";
 import dayjs from "dayjs";
 
 const App = () => {
