@@ -36,9 +36,9 @@ jobs:
 
       - name: 🌐 Export the app
         run: |
-          git config --global user.email "wtf403@yandex.ru"
-          git config --global user.name "Max Kiselev"
-          git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/wtf403/expo-export-test.git
+          git config --global user.email "${EMAIL}"
+          git config --global user.name "${FULLNAME}" 
+          git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${REPO_PATH}.git
           npm run deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
