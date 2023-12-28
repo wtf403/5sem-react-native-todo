@@ -1,0 +1,9 @@
+{
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "lang": "en",
+  "name": "5sem-react-native-todo",
+  "short_name": "5sem-react-native-todo",
+  "start_url": "/?utm_source=web_app_manifest",
+  "orientation": "portrait"
+}
