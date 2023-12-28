@@ -36,9 +36,9 @@ jobs:
 
       - name: 🌐 Export the app
         run: |
-          git config --global user.email "${EMAIL}"
-          git config --global user.name "${FULLNAME}" 
-          git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${REPO_PATH}.git
+          git config --global user.email "${{ vars.EMAIL }}"
+          git config --global user.name "${{ vars.FULLNAME }}" 
+          git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${{ vars.REPO_PATH }}.git
           npm run deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
