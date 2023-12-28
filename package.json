@@ -1,5 +1,6 @@
 {
   "name": "5sem-react-native-todo",
+  "homepage": "https://wtf403.github.io/5sem-react-native-todo",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -8,7 +9,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "predeploy": "expo export:web",
-    "deploy": "gh-pages -d web-build"
+    "deploy": "npx gh-pages -d web-build"
   },
   "dependencies": {
     "@expo/webpack-config": "^19.0.0",
@@ -18,7 +19,7 @@
     "react-dom": "18.2.0",
     "react-native": "0.72.6",
     "react-native-element-dropdown": "^2.10.1",
-    "react-native-ui-datepicker": "^1.0.10",
+    "react-native-ui-datepicker": "^1.0.11",
     "react-native-web": "~0.19.6"
   },
   "devDependencies": {
