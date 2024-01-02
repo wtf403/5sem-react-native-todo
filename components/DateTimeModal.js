@@ -4,7 +4,22 @@ import { Modal, View, Text, TouchableOpacity } from "react-native";
 import DateTimePicker from "react-native-ui-datepicker";
 import { buttonStyles, modalStyles } from "App";
 
-const DateTimeModal = ({ visible, onClose, dateTime, onDateTimeChange }) => {
+const DateTime = React.memo(({ value, type, onChange }) => (
+  <DateTimePicker
+    value={value}
+    onValueChange={onChange}
+    mode={type}
+    style={styles.durationPicker}
+  />
+));
+
+const DateTimeModal = ({
+  visible,
+  type,
+  onClose,
+  dateTime,
+  onDateTimeChange,
+}) => {
   return (
     <Modal visible={visible} transparent={true}>
       <View style={styles.modal}>
@@ -12,9 +27,10 @@ const DateTimeModal = ({ visible, onClose, dateTime, onDateTimeChange }) => {
           <Text>Close</Text>
         </TouchableOpacity>
 
-        <DateTimePicker
+        <DateTime
           style={styles.datePicker}
           value={dateTime}
+          type={type}
           onValueChange={onDateTimeChange}
           todayContainerStyle={{
             borderWidth: 1,

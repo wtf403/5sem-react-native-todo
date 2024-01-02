@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-const FormField = ({ label, isRequired, children }) => {
+const FormField = ({ label, isRequired, children, style }) => {
   return (
-    <View style={styles.fieldContainer}>
-      <Text style={styles.filedLabel}>
-        {label} {isRequired && <Text style={styles.requiredAsterisk}>*</Text>}
-      </Text>
-      {children}
+    <View style={{ ...styles.fieldContainer, ...style }}>
+      <View style={styles.label}>
+        <Text style={styles.filedLabel}>{label}</Text>
+        <Text style={styles.requiredAsterisk}>{isRequired ? "*" : null}</Text>
+      </View>
+      <View>{children}</View>
     </View>
   );
 };
@@ -18,12 +19,18 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   filedLabel: {
-    fontSize: 16,
+    fontSize: 14,
+    fontFamily: "RobotoMedium",
     color: "gray",
-    fontWeight: "bold",
+  },
+  label: {
+    flexDirection: "row",
+    alignItems: "top",
+    gap: 3,
   },
   requiredAsterisk: {
     color: "red",
+    display: "",
   },
 });
 

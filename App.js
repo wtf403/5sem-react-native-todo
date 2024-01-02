@@ -1,3 +1,4 @@
+// App.js
 import React, { useState, useEffect, useCallback } from "react";
 import {
   StyleSheet,
@@ -5,44 +6,69 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  Modal,
   FlatList,
 } from "react-native";
-import DateTimePicker from "react-native-ui-datepicker";
-import Select from "./components/Select.js";
-import Filed from "./components/Field.js";
+import Collapsible from "react-native-collapsible";
+import Checkbox from "react-native-bouncy-checkbox";
+import Select from "./components/Select";
+import Filed from "./components/Field";
 import dayjs from "dayjs";
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+
+SplashScreen.preventAutoHideAsync();
 
 const App = () => {
+  const [fontsLoaded, fontError] = useFonts({
+    RobotoLight: require("./assets/fonts/Roboto-Light.ttf"),
+    RobotoMedium: require("./assets/fonts/Roboto-Medium.ttf"),
+    RobotoRegular: require("./assets/fonts/Roboto-Regular.ttf"),
+  });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded || fontError) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontError]);
+
   const [tasks, setTasks] = useState([
     {
-      name: "work",
-      duration: "2h",
-      type: "Work",
+      name: "Task name",
       date: "12.12.2021",
+      time: "11:15",
+      duration: "120",
+      type: "Work",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     },
   ]);
 
+  const [taskTitle, settaskTitle] = useState(null);
+  const [taskDescription, setTaskDescription] = useState(null);
   const [taskType, setTaskType] = useState(null);
   const [taskDuration, setTaskDuration] = useState(null);
-  const [taskName, setTaskName] = useState(null);
-  const [taskDateTime, setTaskDateTime] = useState(null);
+  const [taskDate, setTaskDate] = useState(null);
+  const [taskTime, setTaskTime] = useState(null);
 
   const handleAddTask = () => {
     const newTask = {
-      type: taskType,
+      name: taskTitle,
+      description: taskDescription,
+      date: taskDate,
+      time: taskTime,
       duration: taskDuration,
-      name: taskName,
-      date: taskDateTime,
+      type: taskType,
     };
 
     console.log(newTask);
 
     setTasks([...tasks, newTask]);
-    setTaskType(null);
+
+    settaskTitle(null);
+    setTaskDescription(null);
     setTaskDuration(null);
-    setTaskName(null);
-    setTaskDateTime(dayjs().format("DD.MM.YYYY"));
+    setTaskType(null);
+    setTaskDate(dayjs().format("DD.MM.YYYY"));
+    setTaskTime(dayjs().format("DD.MM.YYYY"));
   };
 
   const types = [
@@ -52,78 +78,96 @@ const App = () => {
     { label: "Other", value: "other" },
   ];
 
-  const [isDurationModalOpen, toggleDurationModal] = useState(false);
-  const [isDateTimeModalOpen, toggleDateTimeModal] = useState(false);
+  const [isTimeModalOpen, toggleTimeModal] = useState(false);
+  const [isDateModalOpen, toggleDateModal] = useState(false);
 
-  const [modalDuration, setModalDuration] = useState("01.01.1999 00:00");
-  const [modalDateTime, setModalDateTime] = useState(null);
+  const [modalTime, setmodalTime] = useState("01.01.1999 00:00");
+  const [modalDate, setModalDate] = useState(null);
 
-  const handleAddDuration = useCallback(() => {
-    setTaskDuration(dayjs(modalDuration).format("HH:mm"));
+  const [isItemDescriptionShown, toggleItemDescription] = useState(false);
+
+  const handleAddTime = useCallback(() => {
+    setTaskDuration(dayjs(modalTime).format("HH:mm"));
     toggleDurationModal(false);
-  }, [modalDuration]);
+  }, [modalTime]);
 
-  const handleAddDateTime = useCallback(() => {
-    setTaskDateTime(dayjs(taskDateTime).format("DD.MM.YYYY HH:mm"));
-    toggleDateTimeModal(false);
-  }, [taskDateTime]);
-
-  const DurationPicker = React.memo(({ value, onChange }) => (
-    <DateTimePicker
-      value={value}
-      onValueChange={onChange}
-      mode={"time"}
-      style={styles.durationPicker}
-    />
-  ));
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
 
   return (
     <>
-      <View style={styles.container}>
+      <View style={styles.container} onLayout={onLayoutRootView}>
         <View style={styles.header}>
-          <Text style={styles.h1}>TODO List</Text>
+          <Text style={styles.h1}>Notes</Text>
           <Text style={styles.subheader}>{dayjs().format("DD.MM.YYYY")}</Text>
         </View>
         <View style={styles.addTaskForm}>
-          <Filed label="Task type" isRequired={true}>
-            <Select
-              type={taskType}
-              onTypeChange={setTaskType}
-              list={types}
-              placeholder="Select task"
-            />
-          </Filed>
-
-          <Filed label="Task duration" isRequired={true}>
-            <TouchableOpacity
-              style={styles.input}
-              onPress={() => toggleDurationModal(true)}
-            >
-              <Text style={styles.inputText}>
-                {!!taskDuration ? taskDuration : "Set duration"}
-              </Text>
-            </TouchableOpacity>
-          </Filed>
-
-          <Filed label="Choose date" isRequired={true}>
-            <TouchableOpacity
-              style={styles.input}
-              onPress={() => toggleDateTimeModal(true)}
-            >
-              <Text style={styles.inputText}>
-                {!!taskDateTime ? taskDateTime : "Choose date"}
-              </Text>
-            </TouchableOpacity>
-          </Filed>
-
-          <Filed label="Task name" isRequired={true}>
+          <Filed label="Title" isRequired={true}>
             <TextInput
-              value={taskName}
-              onChangeText={(text) => setTaskName(text)}
+              value={taskTitle}
+              onChangeText={(text) => settaskTitle(text)}
               style={styles.input}
-              placeholder="Your text here"
             />
           </Filed>
+
+          <Filed label="Description" isRequired={false}>
+            <TextInput
+              multiline={true}
+              numberOfLines={8}
+              style={styles.textarea}
+              value={taskDescription}
+              onChangeText={(newText) => setTaskDescription(newText)}
+            />
+          </Filed>
+
+          <Filed label="Date & Time" isRequired={false}>
+            <View style={styles.dateTimePicker}>
+              <Text style={styles.dateTimePickerText}>
+                {taskDate ?? "dd.mm.yyyy"} {taskTime ?? "hh:hh"}
+              </Text>
+              <View style={styles.dateTimeButtons}>
+                <TouchableOpacity
+                  style={styles.dateTimeButton}
+                  onPress={() => toggleDateModal(true)}
+                >
+                  <Text style={styles.dateTimeButtonText}>Date</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.dateTimeButton}
+                  onPress={() => toggleTimeModal(true)}
+                >
+                  <Text style={styles.dateTimeButtonText}>Time</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Filed>
+
+          <View style={styles.topFormRow}>
+            <Filed
+              style={styles.taskDurationInput}
+              label="Duration"
+              isRequired={false}
+            >
+              <TextInput
+                value={taskDuration}
+                onChangeText={(text) => setTaskDuration(text)}
+                style={styles.input}
+                placeholder="minutes"
+                placeholderTextColor={"#808080"}
+              />
+            </Filed>
+
+            <Filed style={styles.taskTypeInput} label="Type" isRequired={false}>
+              <Select
+                type={taskType}
+                onTypeChange={setTaskType}
+                style={styles.taskTypePicker}
+                list={types}
+                placeholder="Select task"
+              />
+            </Filed>
+          </View>
 
           <TouchableOpacity style={styles.button} onPress={handleAddTask}>
             <Text style={styles.buttonText}>Add task</Text>
@@ -131,59 +175,43 @@ const App = () => {
         </View>
         <FlatList
           data={tasks}
-          style={styles.tasksList}
+          style={taskStyles.list}
           renderItem={({ item }) => (
-            <View style={styles.tasksListItem}>
-              <Text style={styles.item}>{item.type ?? "–"}</Text>
-              <Text style={styles.item}>{item.duration ?? "–"}</Text>
-              <Text style={styles.item}>{item.name ?? "–"}</Text>
-              <Text style={styles.item}>{item.date ?? "–"}</Text>
+            <View style={taskStyles.item}>
+              <View style={taskStyles.leftButtons}>
+                <Checkbox
+                  innerIconStyle={{
+                    borderRadius: 2,
+                  }}
+                  width={10}
+                  onPress={(isChecked) => true}
+                />
+                <TouchableOpacity
+                  onPress={() => toggleItemDescription(!isItemDescriptionShown)}
+                >
+                  <Text>⌄</Text>
+                </TouchableOpacity>
+              </View>
+              <View>
+                <View>
+                  <Text style={taskStyles.label}>
+                    {item?.date ?? "dd.mm.yyyy"} {item?.time ?? "hh:mm"}
+                  </Text>
+                  <Text style={taskStyles.label}>{item?.type ?? "–"}</Text>
+                </View>
+                <View>
+                  <Text style={styles.item}>{item?.name ?? "–"}</Text>
+                </View>
+                <Collapsible collapsed={isItemDescriptionShown}>
+                  <Text style={styles.item}>{item?.description ?? "–"}</Text>
+                </Collapsible>
+              </View>
+              <View style={taskStyles.rightButtons}></View>
             </View>
           )}
         />
         <View style={styles.listWrapper}></View>
       </View>
-
-      {/* duration modal */}
-      <Modal visible={isDurationModalOpen} transparent={true}>
-        <View style={styles.modal}>
-          <TouchableOpacity onPress={() => toggleDurationModal(false)}>
-            <Text>Close</Text>
-          </TouchableOpacity>
-
-          <DurationPicker
-            value={modalDuration}
-            onChange={(value) => setModalDuration(value)}
-          />
-
-          <TouchableOpacity style={styles.button} onPress={handleAddDuration}>
-            <Text style={styles.buttonText}>Set duration</Text>
-          </TouchableOpacity>
-        </View>
-      </Modal>
-
-      {/* dateTime modal */}
-      <Modal visible={isDateTimeModalOpen} transparent={true}>
-        <View style={styles.modal}>
-          <TouchableOpacity onPress={() => toggleDateTimeModal(false)}>
-            <Text>Close</Text>
-          </TouchableOpacity>
-
-          <DateTimePicker
-            value={taskDateTime}
-            mode={"datetime"}
-            onValueChange={(value) => setTaskDateTime(value)}
-            style={styles.durationPicker}
-            todayContainerStyle={{
-              borderWidth: 1,
-            }}
-          />
-
-          <TouchableOpacity style={styles.button} onPress={handleAddDateTime}>
-            <Text style={styles.buttonText}>Set date and time</Text>
-          </TouchableOpacity>
-        </View>
-      </Modal>
     </>
   );
 };
@@ -191,27 +219,39 @@ const App = () => {
 export const buttonStyles = StyleSheet.create({
   button: {
     paddingHorizontal: 16,
-    backgroundColor: "#1247fc",
+    height: 40,
+    justifyContent: "center",
+    backgroundColor: "#eeeeee",
     paddingVertical: 8,
-    border: "1px solid #ccc",
-    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#808080",
     textTransform: "none",
   },
   buttonText: {
-    color: "white",
+    color: "black",
+    textAlign: "center",
   },
 });
 
 export const inputStyles = StyleSheet.create({
   input: {
-    width: "100%",
-    height: 40,
+    minHeight: 40,
     borderColor: "#ccc",
     borderWidth: 1,
-    padding: 8,
+    borderRadius: 6,
+    padding: 6,
   },
   inputText: {
     color: "gray",
+  },
+  textarea: {
+    minHeight: 120,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 6,
+    padding: 6,
+    paddingTop: 12,
   },
 });
 
@@ -255,32 +295,87 @@ const styles = StyleSheet.create({
   },
   h1: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontFamily: "RobotoLight",
   },
   subheader: {
-    fontSize: 18,
-    color: "gray",
+    fontSize: 16,
+    fontFamily: "RobotoLight",
   },
   addTaskForm: {
     margin: 16,
     gap: 16,
   },
-  tasksList: {
-    margin: 16,
-    border: "1px solid #ccc",
-  },
-  tasksListItem: {
+  topFormRow: {
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
-    flexGrow: 1,
-    padding: 16,
-    marginBottom: 4,
-    borderBottom: "1px solid #ccc",
-    backgroundColor: "lightgray",
+    gap: 16,
   },
+  taskTypeInput: {
+    flex: 8,
+  },
+  taskTypePicker: {
+    borderColor: "red",
+    borderRadius: 6,
+  },
+  taskDurationInput: {
+    flex: 4,
+  },
+  dateTimePicker: {
+    alignItems: "center",
+    flexDirection: "row",
+    minHeight: 40,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 6,
+    padding: 8,
+  },
+  dateTimePickerText: {
+    color: "#808080",
+  },
+  dateTimeButtons: {
+    flexDirection: "row",
+    gap: 6,
+    marginLeft: "auto",
+  },
+  dateTimeButton: {
+    ...buttonStyles.button,
+    backgroundColor: "#eee",
+  },
+  dateTimeButtonText: {
+    color: "black",
+  },
+
   ...buttonStyles,
   ...inputStyles,
   ...modalStyles,
+});
+
+const taskFilters = StyleSheet.create({
+  search: {},
+  sort: {},
+  filter: {},
+});
+
+const taskStyles = StyleSheet.create({
+  list: {
+    gap: 12,
+    margin: 16,
+  },
+  item: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 6,
+    flexDirection: "row",
+  },
+  leftButtons: {
+    justifyContent: "space-between",
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+  },
+  rightButtons: {},
 });
 
 export default App;
