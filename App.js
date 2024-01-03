@@ -182,112 +182,117 @@ const App = () => {
           </TouchableOpacity>
         </View>
         <View style={taskStyles.list}>
-          {tasks.map((item) => (
-            <View style={taskStyles.item}>
-              <View style={taskStyles.leftButtons}>
-                <Checkbox
-                  iconStyle={{
-                    borderColor: "#ccc",
-                    borderRadius: 2,
-                  }}
-                  innerIconStyle={{
-                    borderRadius: 2,
-                  }}
-                  textContainerStyle={{
-                    marginLeft: 0,
-                  }}
-                  fillColor="#808080"
-                  unfillColor="#ccccc"
-                  onPress={(isChecked) => true}
-                  size={16}
-                />
-                <TouchableOpacity
-                  onPress={() =>
-                    setCollapsedItem(!!collapsedItem ? null : item)
-                  }
-                >
-                  <Image
-                    style={[
-                      { width: 20, height: 20 },
-                      collapsedItem === item && { transform: "rotate(180deg)" },
-                    ]}
-                    source={require("./assets/arrow-icon.svg")}
-                  />
-                </TouchableOpacity>
-              </View>
-              <View style={taskStyles.container}>
-                <View style={taskStyles.topRow}>
-                  <Text style={taskStyles.label}>
-                    {item?.date ?? "dd.mm.yyyy"} {item?.time ?? "hh:mm"}
-                  </Text>
-                  <Text style={taskStyles.label}>{item?.type ?? "–"}</Text>
-                </View>
-                <View>
-                  <Text style={taskStyles.title}>{item?.name ?? "–"}</Text>
-                </View>
-                <Collapsible collapsed={!(collapsedItem === item)}>
-                  <Text style={taskStyles.description}>
-                    {item?.description ?? "–"}
-                  </Text>
-                </Collapsible>
-              </View>
-              <View style={taskStyles.rightButtons}>
-                <TouchableWithoutFeedback
-                  onPress={() => setActiveActionsModal(null)}
-                >
-                  <View
-                    style={[
-                      activeActionsModal === item ? null : { display: "none" },
-                      taskStyles.actionsModalBackground,
-                    ]}
-                  ></View>
-                </TouchableWithoutFeedback>
-                <TouchableOpacity
-                  style={taskStyles.actionsModalButton}
-                  onPress={() => setActiveActionsModal(item)}
-                >
-                  <Image
-                    style={taskStyles.dotsIcon}
-                    source={require("./assets/dots-icon.svg")}
-                  />
-                </TouchableOpacity>
-
+          {tasks.map((item, i, arr) => (
+            <View style={{ zIndex: `${arr.length - i}` }}>
+              <TouchableWithoutFeedback
+                onPress={() => setActiveActionsModal(null)}
+              >
                 <View
                   style={[
                     activeActionsModal === item ? null : { display: "none" },
-                    taskStyles.actionsModal,
+                    taskStyles.actionsModalPopover,
                   ]}
-                >
+                ></View>
+              </TouchableWithoutFeedback>
+
+              <View style={taskStyles.item}>
+                <View style={taskStyles.leftButtons}>
+                  <Checkbox
+                    iconStyle={{
+                      borderColor: "#ccc",
+                      borderRadius: 2,
+                    }}
+                    innerIconStyle={{
+                      borderRadius: 2,
+                    }}
+                    textContainerStyle={{
+                      marginLeft: 0,
+                    }}
+                    fillColor="#808080"
+                    unfillColor="#ccccc"
+                    onPress={(isChecked) => true}
+                    size={16}
+                  />
                   <TouchableOpacity
-                    onPress={() => null}
-                    style={taskStyles.actionsModalItem}
+                    onPress={() =>
+                      setCollapsedItem(!!collapsedItem ? null : item)
+                    }
                   >
                     <Image
-                      style={{ width: 20, height: 20 }}
-                      source={require("./assets/star-icon.svg")}
+                      style={[
+                        { width: 20, height: 20 },
+                        collapsedItem === item && {
+                          transform: "rotate(180deg)",
+                        },
+                      ]}
+                      source={require("./assets/arrow-icon.svg")}
                     />
-                    <Text>Add to favorite</Text>
                   </TouchableOpacity>
+                </View>
+                <View style={taskStyles.container}>
+                  <View style={taskStyles.topRow}>
+                    <Text style={taskStyles.label}>
+                      {item?.date ?? "dd.mm.yyyy"} {item?.time ?? "hh:mm"}
+                    </Text>
+                    <Text style={taskStyles.label}>{item?.type ?? "–"}</Text>
+                  </View>
+                  <View>
+                    <Text style={taskStyles.title}>{item?.name ?? "–"}</Text>
+                  </View>
+                  <Collapsible collapsed={!(collapsedItem === item)}>
+                    <Text style={taskStyles.description}>
+                      {item?.description ?? "–"}
+                    </Text>
+                  </Collapsible>
+                </View>
+                <View style={taskStyles.rightButtons}>
                   <TouchableOpacity
-                    onPress={() => null}
-                    style={taskStyles.actionsModalItem}
+                    style={taskStyles.actionsModalButton}
+                    onPress={() => setActiveActionsModal(item)}
                   >
                     <Image
-                      style={{ width: 20, height: 20 }}
-                      source={require("./assets/edit-icon.svg")}
+                      style={taskStyles.dotsIcon}
+                      source={require("./assets/dots-icon.svg")}
                     />
-                    <Text>Edit</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => null}
-                    style={taskStyles.actionsModalItem}
+
+                  <View
+                    style={[
+                      activeActionsModal === item ? null : { display: "none" },
+                      taskStyles.actionsModal,
+                    ]}
                   >
-                    <Image
-                      style={{ width: 20, height: 20 }}
-                      source={require("./assets/delete-icon.svg")}
-                    />
-                    <Text>Delete</Text>
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => null}
+                      style={taskStyles.actionsModalItem}
+                    >
+                      <Image
+                        style={{ width: 20, height: 20 }}
+                        source={require("./assets/star-icon.svg")}
+                      />
+                      <Text>Add to favorite</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => null}
+                      style={taskStyles.actionsModalItem}
+                    >
+                      <Image
+                        style={{ width: 20, height: 20 }}
+                        source={require("./assets/edit-icon.svg")}
+                      />
+                      <Text>Edit</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => null}
+                      style={taskStyles.actionsModalItem}
+                    >
+                      <Image
+                        style={{ width: 20, height: 20 }}
+                        source={require("./assets/delete-icon.svg")}
+                      />
+                      <Text>Delete</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             </View>
@@ -447,6 +452,7 @@ const taskStyles = StyleSheet.create({
   item: {
     borderWidth: 1,
     justifyContent: "space-between",
+    backgroundColor: "white",
     borderColor: "#ccc",
     padding: 12,
     gap: 20,
@@ -496,6 +502,7 @@ const taskStyles = StyleSheet.create({
     fontSize: 16,
   },
   actionsModal: {
+    zIndex: 999,
     position: "absolute",
     backgroundColor: "white",
     borderWidth: 1,
@@ -508,12 +515,13 @@ const taskStyles = StyleSheet.create({
     top: -20,
   },
   actionsModalItem: {
+    backgroundColor: "white",
     padding: 8,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-  actionsModalBackground: {
+  actionsModalPopover: {
     position: "fixed",
     top: 0,
     left: 0,
