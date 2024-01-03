@@ -6,7 +6,8 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  FlatList,
+  Image,
+  TouchableWithoutFeedback,
 } from "react-native";
 import Collapsible from "react-native-collapsible";
 import Checkbox from "react-native-bouncy-checkbox";
@@ -39,6 +40,8 @@ const App = () => {
       duration: "120",
       type: "Work",
       description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      done: false,
+      favorite: true,
     },
   ]);
 
@@ -57,6 +60,8 @@ const App = () => {
       time: taskTime,
       duration: taskDuration,
       type: taskType,
+      done: false,
+      favorite: false,
     };
 
     console.log(newTask);
@@ -90,6 +95,9 @@ const App = () => {
     setTaskDuration(dayjs(modalTime).format("HH:mm"));
     toggleDurationModal(false);
   }, [modalTime]);
+
+  const [activeActionsModal, setActiveActionsModal] = useState(null);
+  const [collapsedItem, setCollapsedItem] = useState(null);
 
   if (!fontsLoaded && !fontError) {
     return null;
@@ -173,44 +181,118 @@ const App = () => {
             <Text style={styles.buttonText}>Add task</Text>
           </TouchableOpacity>
         </View>
-        <FlatList
-          data={tasks}
-          style={taskStyles.list}
-          renderItem={({ item }) => (
+        <View style={taskStyles.list}>
+          {tasks.map((item) => (
             <View style={taskStyles.item}>
               <View style={taskStyles.leftButtons}>
                 <Checkbox
+                  iconStyle={{
+                    borderColor: "#ccc",
+                    borderRadius: 2,
+                  }}
                   innerIconStyle={{
                     borderRadius: 2,
                   }}
-                  width={10}
+                  textContainerStyle={{
+                    marginLeft: 0,
+                  }}
+                  fillColor="#808080"
+                  unfillColor="#ccccc"
                   onPress={(isChecked) => true}
+                  size={16}
                 />
                 <TouchableOpacity
-                  onPress={() => toggleItemDescription(!isItemDescriptionShown)}
+                  onPress={() =>
+                    setCollapsedItem(!!collapsedItem ? null : item)
+                  }
                 >
-                  <Text>⌄</Text>
+                  <Image
+                    style={[
+                      { width: 20, height: 20 },
+                      collapsedItem === item && { transform: "rotate(180deg)" },
+                    ]}
+                    source={require("./assets/arrow-icon.svg")}
+                  />
                 </TouchableOpacity>
               </View>
-              <View>
-                <View>
+              <View style={taskStyles.container}>
+                <View style={taskStyles.topRow}>
                   <Text style={taskStyles.label}>
                     {item?.date ?? "dd.mm.yyyy"} {item?.time ?? "hh:mm"}
                   </Text>
                   <Text style={taskStyles.label}>{item?.type ?? "–"}</Text>
                 </View>
                 <View>
-                  <Text style={styles.item}>{item?.name ?? "–"}</Text>
+                  <Text style={taskStyles.title}>{item?.name ?? "–"}</Text>
                 </View>
-                <Collapsible collapsed={isItemDescriptionShown}>
-                  <Text style={styles.item}>{item?.description ?? "–"}</Text>
+                <Collapsible collapsed={!(collapsedItem === item)}>
+                  <Text style={taskStyles.description}>
+                    {item?.description ?? "–"}
+                  </Text>
                 </Collapsible>
               </View>
-              <View style={taskStyles.rightButtons}></View>
+              <View style={taskStyles.rightButtons}>
+                <TouchableWithoutFeedback
+                  onPress={() => setActiveActionsModal(null)}
+                >
+                  <View
+                    style={[
+                      activeActionsModal === item ? null : { display: "none" },
+                      taskStyles.actionsModalBackground,
+                    ]}
+                  ></View>
+                </TouchableWithoutFeedback>
+                <TouchableOpacity
+                  style={taskStyles.actionsModalButton}
+                  onPress={() => setActiveActionsModal(item)}
+                >
+                  <Image
+                    style={taskStyles.dotsIcon}
+                    source={require("./assets/dots-icon.svg")}
+                  />
+                </TouchableOpacity>
+
+                <View
+                  style={[
+                    activeActionsModal === item ? null : { display: "none" },
+                    taskStyles.actionsModal,
+                  ]}
+                >
+                  <TouchableOpacity
+                    onPress={() => null}
+                    style={taskStyles.actionsModalItem}
+                  >
+                    <Image
+                      style={{ width: 20, height: 20 }}
+                      source={require("./assets/star-icon.svg")}
+                    />
+                    <Text>Add to favorite</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => null}
+                    style={taskStyles.actionsModalItem}
+                  >
+                    <Image
+                      style={{ width: 20, height: 20 }}
+                      source={require("./assets/edit-icon.svg")}
+                    />
+                    <Text>Edit</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => null}
+                    style={taskStyles.actionsModalItem}
+                  >
+                    <Image
+                      style={{ width: 20, height: 20 }}
+                      source={require("./assets/delete-icon.svg")}
+                    />
+                    <Text>Delete</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
-          )}
-        />
-        <View style={styles.listWrapper}></View>
+          ))}
+        </View>
       </View>
     </>
   );
@@ -364,18 +446,80 @@ const taskStyles = StyleSheet.create({
   },
   item: {
     borderWidth: 1,
+    justifyContent: "space-between",
     borderColor: "#ccc",
+    padding: 12,
+    gap: 20,
     borderRadius: 6,
     flexDirection: "row",
   },
+  container: {
+    flex: 1,
+    height: "fit-content",
+  },
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    height: 16,
+    gap: 20,
+  },
+  label: {
+    color: "#808080",
+    fontFamily: "RobotoRegular",
+    fontSize: 14,
+  },
   leftButtons: {
+    alignItems: "center",
+    height: 53,
     justifyContent: "space-between",
   },
-  checkbox: {
+  rightButtons: {
+    height: 53,
+    justifyContent: "center",
+  },
+  dotsIcon: {
+    transform: "translateY(20%)",
     width: 20,
     height: 20,
   },
-  rightButtons: {},
+  actionsModalButton: {
+    position: "relative",
+  },
+  title: {
+    fontSize: 18,
+    marginTop: 18,
+    fontFamily: "RobotoMedium",
+    color: "#808080",
+  },
+  description: {
+    marginTop: 8,
+    fontSize: 16,
+  },
+  actionsModal: {
+    position: "absolute",
+    backgroundColor: "white",
+    borderWidth: 1,
+    borderColor: "#808080",
+    padding: 8,
+    borderRadius: 6,
+    width: 200,
+    transform: "translate(-100%, 50%)",
+    left: 15,
+    top: -20,
+  },
+  actionsModalItem: {
+    padding: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  actionsModalBackground: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+  },
 });
 
 export default App;

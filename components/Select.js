@@ -24,7 +24,8 @@ const Select = ({
       fontFamily={"RobotoLight"}
       labelField="label"
       valueField="value"
-      containerStyle={styles.containerStyle}
+      itemContainerStyle={styles.containerStyle}
+      itemTextStyle={styles.textStyle}
       placeholder={placeholder}
       renderRightIcon={() => (
         <View>
@@ -68,9 +69,12 @@ const styles = StyleSheet.create({
     fontFamily: "RobotoRegular",
   },
   containerStyle: {
+    marginTop: 8,
     borderRadius: 4,
-    borderWidth: 1,
     borderColor: "#808080",
+  },
+  textStyle: {
+    fontSize: 14,
   },
   selectedTextStyle: {
     fontSize: 14,
