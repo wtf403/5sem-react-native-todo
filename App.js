@@ -40,12 +40,12 @@ const App = () => {
       duration: "120",
       type: "Work",
       description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      done: false,
+      done: true,
       favorite: true,
     },
   ]);
 
-  const [taskTitle, settaskTitle] = useState(null);
+  const [taskTitle, setTaskTitle] = useState(null);
   const [taskDescription, setTaskDescription] = useState(null);
   const [taskType, setTaskType] = useState(null);
   const [taskDuration, setTaskDuration] = useState(null);
@@ -68,7 +68,7 @@ const App = () => {
 
     setTasks([...tasks, newTask]);
 
-    settaskTitle(null);
+    setTaskTitle(null);
     setTaskDescription(null);
     setTaskDuration(null);
     setTaskType(null);
@@ -82,6 +82,72 @@ const App = () => {
     { label: "Sport", value: "sport" },
     { label: "Other", value: "other" },
   ];
+
+  const sortTypes = [
+    { label: "Date", value: "date" },
+    { label: "Duration", value: "duration" },
+    { label: "Type", value: "type" },
+  ];
+
+  const [sortingValue, setSortingValue] = useState(null);
+  const [searchValue, setSearchValue] = useState(null);
+  const [filterValue, setFilterValue] = useState("all");
+
+  const [chosenTasks, setChosenTasks] = useState([...tasks]);
+
+  useEffect(() => {
+    let tasksCopy = [...tasks];
+
+    if (filterValue === "favorite") {
+      tasksCopy = tasksCopy.filter((item) => item.favorite);
+    } else if (filterValue === "new") {
+      tasksCopy = tasksCopy.filter((item) => !item.done);
+    } else if (filterValue === "done") {
+      tasksCopy = tasksCopy.filter((item) => item.done);
+    }
+
+    console.log(filterValue, tasksCopy);
+
+    if (searchValue) {
+      tasksCopy = tasksCopy.filter((item) =>
+        item.name.toLowerCase().includes(searchValue.toLowerCase())
+      );
+    }
+
+    if (sortingValue === "date") {
+      tasksCopy = tasksCopy.sort((a, b) => {
+        if (dayjs(a.date).isBefore(dayjs(b.date))) {
+          return -1;
+        } else if (dayjs(a.date).isAfter(dayjs(b.date))) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+    } else if (sortingValue === "duration") {
+      tasksCopy = tasksCopy.sort((a, b) => {
+        if (dayjs(a.duration).isBefore(dayjs(b.duration))) {
+          return -1;
+        } else if (dayjs(a.duration).isAfter(dayjs(b.duration))) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+    } else if (sortingValue === "type") {
+      tasksCopy = tasksCopy.sort((a, b) => {
+        if (a.type < b.type) {
+          return -1;
+        } else if (a.type > b.type) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+    }
+
+    setChosenTasks(tasksCopy);
+  }, [filterValue, searchValue, sortingValue, tasks]);
 
   const [isTimeModalOpen, toggleTimeModal] = useState(false);
   const [isDateModalOpen, toggleDateModal] = useState(false);
@@ -114,7 +180,7 @@ const App = () => {
           <Filed label="Title" isRequired={true}>
             <TextInput
               value={taskTitle}
-              onChangeText={(text) => settaskTitle(text)}
+              onChangeText={(text) => setTaskTitle(text)}
               style={styles.input}
             />
           </Filed>
@@ -168,11 +234,12 @@ const App = () => {
 
             <Filed style={styles.taskTypeInput} label="Type" isRequired={false}>
               <Select
-                type={taskType}
+                value={taskType}
                 onTypeChange={setTaskType}
                 style={styles.taskTypePicker}
-                list={types}
+                options={sortTypes}
                 placeholder="Select task"
+                rightIconName={"arrow-icon.svg"}
               />
             </Filed>
           </View>
@@ -181,8 +248,104 @@ const App = () => {
             <Text style={styles.buttonText}>Add task</Text>
           </TouchableOpacity>
         </View>
+
+        <View style={filterStyles.container}>
+          <View style={filterStyles.search}>
+            <TextInput
+              value={searchValue}
+              onChangeText={(text) => setSearchValue(text)}
+              style={filterStyles.searchInput}
+              placeholder="Search"
+              placeholderTextColor={"#808080"}
+            />
+            <Image
+              style={filterStyles.searchIcon}
+              source={require("./assets/search-icon.svg")}
+            />
+            <View
+              style={[
+                !!searchValue ? null : { display: "none" },
+                filterStyles.crossIcon,
+              ]}
+            >
+              <TouchableOpacity onPress={() => setSearchValue("")}>
+                <Image
+                  style={[{ width: 16, height: 16 }]}
+                  source={require("./assets/cross-icon.svg")}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View style={filterStyles.bottomRow}>
+            <View style={filterStyles.filterContainer}>
+              <TouchableOpacity
+                style={[
+                  filterValue === "all" && { backgroundColor: "#eee" },
+                  filterStyles.filterButton,
+                ]}
+                onPress={() => setFilterValue("all")}
+              >
+                <Text>All</Text>
+                <Image
+                  style={{ width: 16, height: 16 }}
+                  source={require("./assets/all-icon.svg")}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  filterValue === "favorite" && { backgroundColor: "#eee" },
+                  filterStyles.filterButton,
+                ]}
+                onPress={() => setFilterValue("favorite")}
+              >
+                <Text>Favorite</Text>
+                <Image
+                  style={{ width: 16, height: 16 }}
+                  source={require("./assets/star-icon.svg")}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  filterValue === "new" && { backgroundColor: "#eee" },
+                  filterStyles.filterButton,
+                ]}
+                onPress={() => setFilterValue("new")}
+              >
+                <Text>New</Text>
+                <Image
+                  style={{ width: 16, height: 16 }}
+                  source={require("./assets/new-icon.svg")}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  filterValue === "done" && { backgroundColor: "#eee" },
+                  filterStyles.filterButton,
+                ]}
+                onPress={() => setFilterValue("done")}
+              >
+                <Text>Done</Text>
+                <Image
+                  style={{ width: 16, height: 16 }}
+                  source={require("./assets/done-icon.svg")}
+                />
+              </TouchableOpacity>
+            </View>
+            <View style={filterStyles.sortingContainer}>
+              <Select
+                style={filterStyles.sorting}
+                options={sortTypes}
+                onTypeChange={setSortingValue}
+                value={sortingValue}
+                rightIconName={"sort-icon.svg"}
+              />
+            </View>
+          </View>
+        </View>
+
         <View style={taskStyles.list}>
-          {tasks.map((item, i, arr) => (
+          {chosenTasks.map((item, i, arr) => (
             <View style={{ zIndex: `${arr.length - i}` }}>
               <TouchableWithoutFeedback
                 onPress={() => setActiveActionsModal(null)}
@@ -220,7 +383,7 @@ const App = () => {
                   >
                     <Image
                       style={[
-                        { width: 20, height: 20 },
+                        { width: 16, height: 16 },
                         collapsedItem === item && {
                           transform: "rotate(180deg)",
                         },
@@ -390,6 +553,7 @@ const styles = StyleSheet.create({
   },
   addTaskForm: {
     margin: 16,
+    marginBottom: 64,
     gap: 16,
   },
   topFormRow: {
@@ -438,10 +602,70 @@ const styles = StyleSheet.create({
   ...modalStyles,
 });
 
-const taskFilters = StyleSheet.create({
-  search: {},
+const filterStyles = StyleSheet.create({
+  container: {
+    gap: 12,
+    margin: 16,
+    marginBottom: 4,
+  },
   sort: {},
-  filter: {},
+  search: {
+    position: "relative",
+  },
+  searchInput: {
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 4,
+    paddingHorizontal: 40,
+    paddingVertical: 12,
+  },
+  searchIcon: {
+    width: 20,
+    height: 20,
+    position: "absolute",
+    transform: "translateY(-50%)",
+    top: "50%",
+    left: 12,
+  },
+  crossIcon: {
+    position: "absolute",
+    transform: "translateY(-50%)",
+    top: "50%",
+    right: 12,
+  },
+  bottomRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  filterContainer: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  filterButton: {
+    flexDirection: "row",
+    gap: 8,
+    height: 28,
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 6,
+  },
+  sortingContainer: {
+    width: 200,
+    height: 28,
+  },
+  sorting: {
+    borderRadius: 6,
+    backgroundColor: "#eee",
+    height: 28,
+  },
+  sortingIcon: {
+    width: 20,
+    height: 20,
+  },
 });
 
 const taskStyles = StyleSheet.create({
@@ -484,7 +708,6 @@ const taskStyles = StyleSheet.create({
     justifyContent: "center",
   },
   dotsIcon: {
-    transform: "translateY(20%)",
     width: 20,
     height: 20,
   },

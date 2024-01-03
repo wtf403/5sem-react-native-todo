@@ -4,10 +4,11 @@ import { Dropdown } from "react-native-element-dropdown";
 import { View } from "react-native-web";
 
 const Select = ({
-  type,
+  value,
   onTypeChange,
-  list = [],
+  options = [],
   placeholder = "Select item",
+  rightIconName,
   style,
 }) => {
   const [isFocus, setIsFocus] = useState(false);
@@ -17,7 +18,7 @@ const Select = ({
       style={[style, styles.dropdown, isFocus && { borderColor: "#808080" }]}
       placeholderStyle={styles.placeholderStyle}
       selectedTextStyle={styles.selectedTextStyle}
-      data={list}
+      data={options}
       search={false}
       maxHeight={300}
       activeColor={"#eee"}
@@ -28,14 +29,12 @@ const Select = ({
       itemTextStyle={styles.textStyle}
       placeholder={placeholder}
       renderRightIcon={() => (
-        <View>
-          <Image
-            style={[styles.icon, isFocus && { transform: "rotate(180deg)" }]}
-            source={require("../assets/arrow-icon.svg")}
-          />
-        </View>
+        <Image
+          style={[styles.icon, isFocus && { transform: "rotate(180deg)" }]}
+          source={require(`../assets/${rightIconName}`)}
+        />
       )}
-      value={type}
+      value={value}
       onFocus={() => setIsFocus(true)}
       onBlur={() => setIsFocus(false)}
       onChange={(item) => {
@@ -56,8 +55,8 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 5,
-    width: 20,
-    height: 20,
+    width: 16,
+    height: 16,
   },
   label: {
     display: "none",
@@ -65,11 +64,11 @@ const styles = StyleSheet.create({
   placeholderStyle: {
     fontSize: 14,
     userSelect: "none",
-    marginStart: 8,
+    marginStart: 6,
     fontFamily: "RobotoRegular",
   },
   containerStyle: {
-    marginTop: 8,
+    marginTop: 6,
     borderRadius: 4,
     borderColor: "#808080",
   },
@@ -78,7 +77,7 @@ const styles = StyleSheet.create({
   },
   selectedTextStyle: {
     fontSize: 14,
-    marginStart: 8,
+    marginStart: 6,
   },
 });
 
