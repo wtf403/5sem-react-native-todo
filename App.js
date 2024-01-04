@@ -10,9 +10,10 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import Collapsible from "react-native-collapsible";
-import Checkbox from "react-native-bouncy-checkbox";
+import Checkbox from "./components/Checkbox";
 import Select from "./components/Select";
-import Filed from "./components/Field";
+import Field from "./components/Field";
+import DateTimeModal from "./components/DateTimeModal";
 import dayjs from "dayjs";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
@@ -34,46 +35,68 @@ const App = () => {
 
   const [tasks, setTasks] = useState([
     {
-      name: "Task name",
+      name: "Task 1",
       date: "12.12.2021",
-      time: "11:15",
-      duration: "120",
+      time: "10:50",
+      duration: 20,
       type: "Work",
       description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
       done: true,
-      favorite: true,
+      favorite: false,
+    },
+    {
+      name: "Task 2",
+      date: "12.12.2022",
+      time: "00:20",
+      duration: 120,
+      type: "Work",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      done: false,
+      favorite: false,
+    },
+    {
+      name: "Task name",
+      date: "12.12.2023",
+      time: "15:15",
+      duration: 60,
+      type: "Work",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      done: false,
+      favorite: false,
     },
   ]);
 
-  const [taskTitle, setTaskTitle] = useState(null);
-  const [taskDescription, setTaskDescription] = useState(null);
-  const [taskType, setTaskType] = useState(null);
-  const [taskDuration, setTaskDuration] = useState(null);
-  const [taskDate, setTaskDate] = useState(null);
-  const [taskTime, setTaskTime] = useState(null);
+  const [taskTitle, setTaskTitle] = useState("");
+  const [taskDescription, setTaskDescription] = useState("");
+  const [taskType, setTaskType] = useState("");
+  const [taskDuration, setTaskDuration] = useState("");
+  const [taskDate, setTaskDate] = useState("");
+  const [taskTime, setTaskTime] = useState("");
 
   const handleAddTask = () => {
+    if (required) {
+      return;
+    }
+
     const newTask = {
       name: taskTitle,
       description: taskDescription,
       date: taskDate,
       time: taskTime,
-      duration: taskDuration,
+      duration: parseInt(taskDuration),
       type: taskType,
       done: false,
       favorite: false,
     };
 
-    console.log(newTask);
-
     setTasks([...tasks, newTask]);
 
-    setTaskTitle(null);
-    setTaskDescription(null);
-    setTaskDuration(null);
-    setTaskType(null);
-    setTaskDate(dayjs().format("DD.MM.YYYY"));
-    setTaskTime(dayjs().format("DD.MM.YYYY"));
+    setTaskTitle("");
+    setTaskDescription("");
+    setTaskDuration("");
+    setTaskType("");
+    setTaskDate("");
+    setTaskTime("");
   };
 
   const types = [
@@ -89,11 +112,16 @@ const App = () => {
     { label: "Type", value: "type" },
   ];
 
-  const [sortingValue, setSortingValue] = useState(null);
+  const [sortingValue, setSortingValue] = useState("date");
   const [searchValue, setSearchValue] = useState(null);
   const [filterValue, setFilterValue] = useState("all");
 
   const [chosenTasks, setChosenTasks] = useState([...tasks]);
+
+  useEffect(() => {
+    document.body.style.overflow =
+      isDateModalOpen || isTimeModalOpen ? "hidden" : "unset";
+  }, [isDateModalOpen, isTimeModalOpen]);
 
   useEffect(() => {
     let tasksCopy = [...tasks];
@@ -106,8 +134,6 @@ const App = () => {
       tasksCopy = tasksCopy.filter((item) => item.done);
     }
 
-    console.log(filterValue, tasksCopy);
-
     if (searchValue) {
       tasksCopy = tasksCopy.filter((item) =>
         item.name.toLowerCase().includes(searchValue.toLowerCase())
@@ -116,9 +142,9 @@ const App = () => {
 
     if (sortingValue === "date") {
       tasksCopy = tasksCopy.sort((a, b) => {
-        if (dayjs(a.date).isBefore(dayjs(b.date))) {
+        if (dayjs(a.date + a.time).isBefore(dayjs(b.date + b.time))) {
           return -1;
-        } else if (dayjs(a.date).isAfter(dayjs(b.date))) {
+        } else if (dayjs(a.date + a.time).isAfter(dayjs(b.date + b.time))) {
           return 1;
         } else {
           return 0;
@@ -152,18 +178,50 @@ const App = () => {
   const [isTimeModalOpen, toggleTimeModal] = useState(false);
   const [isDateModalOpen, toggleDateModal] = useState(false);
 
-  const [modalTime, setmodalTime] = useState("01.01.1999 00:00");
-  const [modalDate, setModalDate] = useState(null);
-
-  const [isItemDescriptionShown, toggleItemDescription] = useState(false);
+  const [modalTime, setModalTime] = useState(
+    dayjs().format("DD.MM.YYYY HH:mm")
+  );
+  const [modalDate, setModalDate] = useState(
+    dayjs().format("DD.MM.YYYY HH:mm")
+  );
 
   const handleAddTime = useCallback(() => {
-    setTaskDuration(dayjs(modalTime).format("HH:mm"));
-    toggleDurationModal(false);
+    setTaskTime(dayjs(modalTime).format("HH:mm"));
+    toggleTimeModal(false);
   }, [modalTime]);
+
+  const handleAddDate = useCallback(() => {
+    setTaskDate(dayjs(modalDate).format("DD.MM.YYYY"));
+    toggleDateModal(false);
+  }, [modalDate]);
 
   const [activeActionsModal, setActiveActionsModal] = useState(null);
   const [collapsedItem, setCollapsedItem] = useState(null);
+
+  const handleDeleteTask = (item) => {
+    let taskCopy = [...tasks];
+    const index = taskCopy.findIndex((task) => task === item);
+    taskCopy.splice(index, 1);
+    setTasks(taskCopy);
+    setActiveActionsModal(null);
+  };
+
+  const handleToggleFavorite = (item) => {
+    let taskCopy = [...tasks];
+    const index = taskCopy.findIndex((task) => task === item);
+    taskCopy[index].favorite = !taskCopy[index].favorite;
+    setTasks(taskCopy);
+    setActiveActionsModal(null);
+  };
+
+  const handleCheckTask = (item) => {
+    let taskCopy = [...tasks];
+    const index = taskCopy.findIndex((task) => task === item);
+    taskCopy[index].done = !item.done;
+    setTasks(taskCopy);
+  };
+
+  const required = !taskTitle || !taskDate || !taskTime;
 
   if (!fontsLoaded && !fontError) {
     return null;
@@ -177,15 +235,15 @@ const App = () => {
           <Text style={styles.subheader}>{dayjs().format("DD.MM.YYYY")}</Text>
         </View>
         <View style={styles.addTaskForm}>
-          <Filed label="Title" isRequired={true}>
+          <Field label="Title" isRequired={true}>
             <TextInput
               value={taskTitle}
               onChangeText={(text) => setTaskTitle(text)}
               style={styles.input}
             />
-          </Filed>
+          </Field>
 
-          <Filed label="Description" isRequired={false}>
+          <Field label="Description" isRequired={false}>
             <TextInput
               multiline={true}
               numberOfLines={8}
@@ -193,12 +251,12 @@ const App = () => {
               value={taskDescription}
               onChangeText={(newText) => setTaskDescription(newText)}
             />
-          </Filed>
+          </Field>
 
-          <Filed label="Date & Time" isRequired={false}>
+          <Field label="Date & Time" isRequired={true}>
             <View style={styles.dateTimePicker}>
               <Text style={styles.dateTimePickerText}>
-                {taskDate ?? "dd.mm.yyyy"} {taskTime ?? "hh:hh"}
+                {taskDate ?? "dd.mm.yyyy"} {taskTime ?? "hh:mm"}
               </Text>
               <View style={styles.dateTimeButtons}>
                 <TouchableOpacity
@@ -215,10 +273,10 @@ const App = () => {
                 </TouchableOpacity>
               </View>
             </View>
-          </Filed>
+          </Field>
 
           <View style={styles.topFormRow}>
-            <Filed
+            <Field
               style={styles.taskDurationInput}
               label="Duration"
               isRequired={false}
@@ -230,22 +288,34 @@ const App = () => {
                 placeholder="minutes"
                 placeholderTextColor={"#808080"}
               />
-            </Filed>
+            </Field>
 
-            <Filed style={styles.taskTypeInput} label="Type" isRequired={false}>
+            <Field style={styles.taskTypeInput} label="Type" isRequired={false}>
               <Select
                 value={taskType}
                 onTypeChange={setTaskType}
                 style={styles.taskTypePicker}
-                options={sortTypes}
+                options={types}
                 placeholder="Select task"
                 rightIconName={"arrow-icon.svg"}
               />
-            </Filed>
+            </Field>
           </View>
 
-          <TouchableOpacity style={styles.button} onPress={handleAddTask}>
-            <Text style={styles.buttonText}>Add task</Text>
+          <TouchableOpacity
+            style={[
+              styles.button,
+              required && {
+                backgroundColor: "whitesmoke",
+                borderColor: "#eee",
+              },
+            ]}
+            disabled={!!required}
+            onPress={handleAddTask}
+          >
+            <Text style={[styles.buttonText, required && { color: "#ccc" }]}>
+              Add task
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -339,6 +409,7 @@ const App = () => {
                 onTypeChange={setSortingValue}
                 value={sortingValue}
                 rightIconName={"sort-icon.svg"}
+                placeholder={sortingValue}
               />
             </View>
           </View>
@@ -361,20 +432,9 @@ const App = () => {
               <View style={taskStyles.item}>
                 <View style={taskStyles.leftButtons}>
                   <Checkbox
-                    iconStyle={{
-                      borderColor: "#ccc",
-                      borderRadius: 2,
-                    }}
-                    innerIconStyle={{
-                      borderRadius: 2,
-                    }}
-                    textContainerStyle={{
-                      marginLeft: 0,
-                    }}
-                    fillColor="#808080"
-                    unfillColor="#ccccc"
-                    onPress={(isChecked) => true}
-                    size={16}
+                    checked={item?.done}
+                    onToggleChecked={() => handleCheckTask(item)}
+                    style={styles.checkbox}
                   />
                   <TouchableOpacity
                     onPress={() =>
@@ -384,6 +444,7 @@ const App = () => {
                     <Image
                       style={[
                         { width: 16, height: 16 },
+                        !item.description && { display: "none" },
                         collapsedItem === item && {
                           transform: "rotate(180deg)",
                         },
@@ -394,10 +455,50 @@ const App = () => {
                 </View>
                 <View style={taskStyles.container}>
                   <View style={taskStyles.topRow}>
-                    <Text style={taskStyles.label}>
-                      {item?.date ?? "dd.mm.yyyy"} {item?.time ?? "hh:mm"}
+                    <Text
+                      style={[
+                        taskStyles.label,
+                        !item?.date && { display: "none" },
+                      ]}
+                    >
+                      {item?.date ?? "–"}
                     </Text>
-                    <Text style={taskStyles.label}>{item?.type ?? "–"}</Text>
+                    <Text
+                      style={[
+                        taskStyles.label,
+                        !item?.time && { display: "none" },
+                      ]}
+                    >
+                      {item?.time ?? "–"}
+                    </Text>
+                    <Text
+                      style={[
+                        taskStyles.label,
+                        !item?.type && { display: "none" },
+                      ]}
+                    >
+                      {item?.type ?? "–"}
+                    </Text>
+                    <Text
+                      style={[
+                        taskStyles.label,
+                        !item?.duration && { display: "none" },
+                      ]}
+                    >
+                      {item?.duration ?? "–"} minutes
+                    </Text>
+                    <View
+                      style={[
+                        taskStyles.label,
+                        !item?.favorite && { display: "none" },
+                      ]}
+                    >
+                      <Image
+                        source={require("./assets/star-icon.svg")}
+                        style={{ width: 12, height: 12 }}
+                      />
+                      <Text style={{ color: "#808080" }}>favorite</Text>
+                    </View>
                   </View>
                   <View>
                     <Text style={taskStyles.title}>{item?.name ?? "–"}</Text>
@@ -426,27 +527,21 @@ const App = () => {
                     ]}
                   >
                     <TouchableOpacity
-                      onPress={() => null}
+                      onPress={() => handleToggleFavorite(item)}
                       style={taskStyles.actionsModalItem}
                     >
                       <Image
                         style={{ width: 20, height: 20 }}
                         source={require("./assets/star-icon.svg")}
                       />
-                      <Text>Add to favorite</Text>
+                      <Text>
+                        {item.favorite
+                          ? "Remove from favorite"
+                          : "Add to favorite"}
+                      </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      onPress={() => null}
-                      style={taskStyles.actionsModalItem}
-                    >
-                      <Image
-                        style={{ width: 20, height: 20 }}
-                        source={require("./assets/edit-icon.svg")}
-                      />
-                      <Text>Edit</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => null}
+                      onPress={() => handleDeleteTask(item)}
                       style={taskStyles.actionsModalItem}
                     >
                       <Image
@@ -462,6 +557,26 @@ const App = () => {
           ))}
         </View>
       </View>
+
+      <DateTimeModal
+        visible={isDateModalOpen}
+        dateTime={modalDate}
+        onDateTimeChange={setModalDate}
+        onClose={() => toggleDateModal(false)}
+        onSubmit={handleAddDate}
+        style={[isDateModalOpen ? null : { display: "none" }]}
+        type={"date"}
+      />
+
+      <DateTimeModal
+        visible={isTimeModalOpen}
+        dateTime={modalTime}
+        onDateTimeChange={setModalTime}
+        onClose={() => toggleTimeModal(false)}
+        onSubmit={handleAddTime}
+        style={[isTimeModalOpen ? null : { display: "none" }]}
+        type={"time"}
+      />
     </>
   );
 };
@@ -502,22 +617,6 @@ export const inputStyles = StyleSheet.create({
     borderRadius: 6,
     padding: 6,
     paddingTop: 12,
-  },
-});
-
-export const modalStyles = StyleSheet.create({
-  modal: {
-    borderWidth: 1,
-    backgroundColor: "white",
-    margin: "auto",
-    paddingHorizontal: 32,
-    paddingVertical: 16,
-    borderColor: "#ccc",
-    width: 200,
-    width: "50%",
-  },
-  modalCloseBtn: {
-    width: "20%",
   },
 });
 
@@ -596,10 +695,13 @@ const styles = StyleSheet.create({
   dateTimeButtonText: {
     color: "black",
   },
+  checkbox: {
+    width: 16,
+    height: 16,
+  },
 
   ...buttonStyles,
   ...inputStyles,
-  ...modalStyles,
 });
 
 const filterStyles = StyleSheet.create({
@@ -672,6 +774,7 @@ const taskStyles = StyleSheet.create({
   list: {
     gap: 12,
     margin: 16,
+    marginBottom: 100,
   },
   item: {
     borderWidth: 1,
@@ -694,6 +797,9 @@ const taskStyles = StyleSheet.create({
     gap: 20,
   },
   label: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
     color: "#808080",
     fontFamily: "RobotoRegular",
     fontSize: 14,
@@ -721,6 +827,8 @@ const taskStyles = StyleSheet.create({
     color: "#808080",
   },
   description: {
+    fontFamily: "RobotoRegular",
+    color: "#808080",
     marginTop: 8,
     fontSize: 16,
   },

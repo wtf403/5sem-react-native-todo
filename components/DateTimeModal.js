@@ -1,13 +1,21 @@
 // DateTimeModal.js
 import React from "react";
-import { Modal, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import Modal from "react-native-modal";
 import DateTimePicker from "react-native-ui-datepicker";
-import { buttonStyles, modalStyles } from "App";
 
-const DateTime = React.memo(({ value, type, onChange }) => (
+const DateTime = React.memo(({ value, type, onValueChange }) => (
   <DateTimePicker
     value={value}
-    onValueChange={onChange}
+    onValueChange={onValueChange}
+    selectedItemColor={"#eee"}
+    calendarTextStyle={{
+      fontFamily: "RobotoLight",
+    }}
+    selectedTextStyle={{
+      fontFamily: "RobotoRegular",
+      color: "black",
+    }}
     mode={type}
     style={styles.durationPicker}
   />
@@ -17,16 +25,13 @@ const DateTimeModal = ({
   visible,
   type,
   onClose,
+  onSubmit,
   dateTime,
   onDateTimeChange,
 }) => {
   return (
-    <Modal visible={visible} transparent={true}>
+    <Modal onBackdropPress={onClose} visible={visible} transparent={true}>
       <View style={styles.modal}>
-        <TouchableOpacity style={styles.modalCloseBtn} onPress={onClose}>
-          <Text>Close</Text>
-        </TouchableOpacity>
-
         <DateTime
           style={styles.datePicker}
           value={dateTime}
@@ -37,8 +42,8 @@ const DateTimeModal = ({
           }}
         />
 
-        <TouchableOpacity style={styles.button} onPress={onClose}>
-          <Text style={styles.buttonText}>Choose</Text>
+        <TouchableOpacity style={styles.button} onPress={onSubmit}>
+          <Text style={styles.buttonText}>Choose {type}</Text>
         </TouchableOpacity>
       </View>
     </Modal>
@@ -46,6 +51,19 @@ const DateTimeModal = ({
 };
 
 const styles = StyleSheet.create({
+  modal: {
+    borderWidth: 1,
+    backgroundColor: "white",
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    marginHorizontal: "auto",
+    paddingVertical: 8,
+    borderColor: "#ccc",
+    width: 330,
+  },
+  modalCloseBtn: {
+    width: "20%",
+  },
   datePicker: {
     borderColor: "#ccc",
     width: 200,
@@ -53,8 +71,16 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 40,
   },
-  ...buttonStyles,
-  ...modalStyles,
+
+  button: {
+    padding: 12,
+    backgroundColor: "#eee",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#808080",
+    borderRadius: 4,
+    marginBottom: 8,
+  },
 });
 
 export default DateTimeModal;

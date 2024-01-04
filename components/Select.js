@@ -1,3 +1,4 @@
+// Select.js
 import React, { useState } from "react";
 import { StyleSheet, Image } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
@@ -7,7 +8,7 @@ const Select = ({
   value,
   onTypeChange,
   options = [],
-  placeholder = "Select item",
+  placeholder,
   rightIconName,
   style,
 }) => {
@@ -27,7 +28,6 @@ const Select = ({
       valueField="value"
       itemContainerStyle={styles.containerStyle}
       itemTextStyle={styles.textStyle}
-      placeholder={placeholder}
       renderRightIcon={() => (
         <Image
           style={[styles.icon, isFocus && { transform: "rotate(180deg)" }]}
