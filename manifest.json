@@ -4,5 +4,17 @@
   "name": "5sem-react-native-todo",
   "short_name": "5sem-react-native-todo",
   "start_url": "/?utm_source=web_app_manifest",
-  "orientation": "portrait"
+  "orientation": "portrait",
+  "related_applications": [
+    {
+      "platform": "itunes",
+      "id": "todo.package"
+    },
+    {
+      "platform": "play",
+      "url": "http://play.google.com/store/apps/details?id=todo.package",
+      "id": "todo.package"
+    }
+  ],
+  "prefer_related_applications": true
 }

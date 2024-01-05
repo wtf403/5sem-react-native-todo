@@ -1,15 +1,13 @@
 {
   "files": {
-    "main.js": "/5sem-react-native-todo/static/js/main.1a320ff8.js",
-    "static/js/648.6221f2bb.js": "/5sem-react-native-todo/static/js/648.6221f2bb.js",
+    "main.js": "/5sem-react-native-todo/static/js/main.489fd9c1.js",
+    "static/js/397.64726c7a.js": "/5sem-react-native-todo/static/js/397.64726c7a.js",
     "static/media/Roboto-Light.ttf": "/5sem-react-native-todo/static/media/Roboto-Light.03e629f6348896ffa23a.ttf",
     "static/media/Roboto-Medium.ttf": "/5sem-react-native-todo/static/media/Roboto-Medium.d2d7f0c01bffaa5ec8f7.ttf",
     "static/media/Roboto-Regular.ttf": "/5sem-react-native-todo/static/media/Roboto-Regular.f25bd05915c1a3468d3d.ttf",
-    "static/media/adaptive-icon.png": "/5sem-react-native-todo/static/media/adaptive-icon.e4e802086f8059b5b5ba.png",
     "favicon.ico": "/5sem-react-native-todo/favicon.ico",
     "static/media/arrow_right.png": "/5sem-react-native-todo/static/media/arrow_right.e8676896fba657b8737b.png",
     "static/media/arrow_left.png": "/5sem-react-native-todo/static/media/arrow_left.d30e48edaec517fafb76.png",
-    "static/media/edit-icon.svg": "/5sem-react-native-todo/static/media/edit-icon.27808ecaaea945f8ee4c.svg",
     "static/media/delete-icon.svg": "/5sem-react-native-todo/static/media/delete-icon.2dfdcdff7fcda6158902.svg",
     "index.html": "/5sem-react-native-todo/index.html",
     "static/media/star-icon.svg": "/5sem-react-native-todo/static/media/star-icon.c4a9647ae4beac62e225.svg",
@@ -17,14 +15,14 @@
     "static/media/cross-icon.svg": "/5sem-react-native-todo/static/media/cross-icon.bb9f2d7d43d013635dee.svg",
     "static/media/dots-icon.svg": "/5sem-react-native-todo/static/media/dots-icon.5efd2595deb3fac365c8.svg",
     "favicon-32.png": "/5sem-react-native-todo/favicon-32.png",
+    "manifest.json": "/5sem-react-native-todo/manifest.json",
     "favicon-16.png": "/5sem-react-native-todo/favicon-16.png",
     "serve.json": "/5sem-react-native-todo/serve.json",
-    "manifest.json": "/5sem-react-native-todo/manifest.json",
-    "main.1a320ff8.js.map": "/5sem-react-native-todo/static/js/main.1a320ff8.js.map",
-    "648.6221f2bb.js.map": "/5sem-react-native-todo/static/js/648.6221f2bb.js.map"
+    "main.489fd9c1.js.map": "/5sem-react-native-todo/static/js/main.489fd9c1.js.map",
+    "397.64726c7a.js.map": "/5sem-react-native-todo/static/js/397.64726c7a.js.map"
   },
   "entrypoints": [
-    "static/js/648.6221f2bb.js",
-    "static/js/main.1a320ff8.js"
+    "static/js/397.64726c7a.js",
+    "static/js/main.489fd9c1.js"
   ]
 }
