@@ -30,7 +30,6 @@ const styles = StyleSheet.create({
   },
   requiredAsterisk: {
     color: "red",
-    display: "",
   },
 });
 

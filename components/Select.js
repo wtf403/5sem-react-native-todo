@@ -1,8 +1,8 @@
 // Select.js
 import React, { useState } from "react";
-import { StyleSheet, Image } from "react-native";
+import { Image } from "expo-image";
+import { StyleSheet } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
-import { View } from "react-native-web";
 
 const Select = ({
   value,
@@ -26,12 +26,17 @@ const Select = ({
       fontFamily={"RobotoLight"}
       labelField="label"
       valueField="value"
+      placeholder={placeholder}
       itemContainerStyle={styles.containerStyle}
       itemTextStyle={styles.textStyle}
       renderRightIcon={() => (
         <Image
           style={[styles.icon, isFocus && { transform: "rotate(180deg)" }]}
-          source={require(`../assets/${rightIconName}`)}
+          source={
+            rightIconName === "sort-icon.svg"
+              ? require(`../assets/sort-icon.svg`)
+              : require(`../assets/arrow-icon.svg`)
+          }
         />
       )}
       value={value}

@@ -8,13 +8,15 @@
     "userInterfaceStyle": "light",
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "todo.package"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "todo.package"
     },
     "web": {
       "favicon": "./assets/favicon.png"

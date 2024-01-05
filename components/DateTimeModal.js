@@ -9,6 +9,7 @@ const DateTime = React.memo(({ value, type, onValueChange }) => (
     value={value}
     onValueChange={onValueChange}
     selectedItemColor={"#eee"}
+    displayFullDays={true}
     calendarTextStyle={{
       fontFamily: "RobotoLight",
     }}
@@ -16,8 +17,8 @@ const DateTime = React.memo(({ value, type, onValueChange }) => (
       fontFamily: "RobotoRegular",
       color: "black",
     }}
-    mode={type}
     style={styles.durationPicker}
+    mode={type}
   />
 ));
 

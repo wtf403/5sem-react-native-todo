@@ -1,6 +1,7 @@
 // Checkbox.js
 import React, { useState } from "react";
-import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, View, TouchableOpacity } from "react-native";
+import { Image } from "expo-image";
 
 const Checkbox = ({ checked, onToggleChecked }) => {
   return (
@@ -28,8 +29,8 @@ const styles = StyleSheet.create({
   },
   icon: {
     margin: "auto",
-    width: 12,
-    height: 12,
+    width: 14,
+    height: 14,
   },
 });
 
