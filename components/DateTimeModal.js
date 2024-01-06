@@ -53,6 +53,9 @@ const DateTimeModal = ({
 
 const styles = StyleSheet.create({
   modal: {
+    position: "absolute",
+    left: "50%",
+    transform: [{ translateX: -165 }],
     borderWidth: 1,
     backgroundColor: "white",
     borderRadius: 8,

@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
-  Dimensions,
 } from "react-native";
 import Collapsible from "react-native-collapsible";
 import "@expo/match-media";
@@ -24,9 +23,6 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
 SplashScreen.preventAutoHideAsync();
-
-const screenWidth = Dimensions.get("window").width;
-const screenHeight = Dimensions.get("window").height;
 
 const App = () => {
   const [fontsLoaded, fontError] = useFonts({
@@ -43,8 +39,19 @@ const App = () => {
 
   const [tasks, setTasks] = useState([
     {
+      name: "blank",
+      date: "12.01.2021",
+      time: "00:00",
+      duration: 0,
+      type: "blank",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      done: false,
+      favorite: false,
+      blank: true,
+    },
+    {
       name: "Task 1",
-      date: "12.12.2021",
+      date: "12.12.2025",
       time: "10:50",
       duration: 20,
       type: "Work",
@@ -54,7 +61,7 @@ const App = () => {
     },
     {
       name: "Task 2",
-      date: "12.12.2022",
+      date: "12.12.2025",
       time: "00:20",
       duration: 120,
       type: "Work",
@@ -132,12 +139,20 @@ const App = () => {
   useEffect(() => {
     let tasksCopy = [...tasks];
 
-    if (filterValue === "favorite") {
-      tasksCopy = tasksCopy.filter((item) => item.favorite);
-    } else if (filterValue === "new") {
-      tasksCopy = tasksCopy.filter((item) => !item.done);
+    if (filterValue === "todo") {
+      tasksCopy = tasksCopy.filter((item) => !item.done || item.blank);
     } else if (filterValue === "done") {
-      tasksCopy = tasksCopy.filter((item) => item.done);
+      tasksCopy = tasksCopy.filter((item) => item.done || item.blank);
+    } else if (filterValue === "favorite") {
+      tasksCopy = tasksCopy.filter((item) => item.favorite || item.blank);
+    } else if (filterValue === "overdue") {
+      tasksCopy = tasksCopy.filter((item) => {
+        const dateWithDuration = dayjs(item.date + " " + item.time).add(
+          item.duration,
+          "minute"
+        );
+        return dayjs(dateWithDuration).isBefore(dayjs()) || item.blank;
+      });
     }
 
     if (searchValue) {
@@ -262,7 +277,8 @@ const App = () => {
               <Field label="Date & Time" isRequired={true}>
                 <View style={styles.dateTimePicker}>
                   <Text style={styles.dateTimePickerText}>
-                    {taskDate ?? "dd.mm.yyyy"} {taskTime ?? "hh:mm"}
+                    {taskDate !== "" ? taskDate : "dd.mm.yyyy"}{" "}
+                    {taskTime !== "" ? taskTime : "hh:mm"}
                   </Text>
                   <View style={styles.dateTimeButtons}>
                     <TouchableOpacity
@@ -383,11 +399,58 @@ const App = () => {
                     ]}
                     onPress={() => setFilterValue("all")}
                   >
-                    <Text>All</Text>
                     <Image
                       style={{ width: 16, height: 16 }}
                       source={require("./assets/all-icon.svg")}
                     />
+                    <Text
+                      style={[
+                        { color: "#808080" },
+                        filterValue === "all" && { color: "#000" },
+                      ]}
+                    >
+                      All
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      filterValue === "todo" && { backgroundColor: "#eee" },
+                      filterStyles.filterButton,
+                    ]}
+                    onPress={() => setFilterValue("todo")}
+                  >
+                    <Image
+                      style={{ width: 16, height: 16 }}
+                      source={require("./assets/todo-icon.svg")}
+                    />
+                    <Text
+                      style={[
+                        { color: "#808080" },
+                        filterValue === "todo" && { color: "#000" },
+                      ]}
+                    >
+                      TODO
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      filterValue === "done" && { backgroundColor: "#eee" },
+                      filterStyles.filterButton,
+                    ]}
+                    onPress={() => setFilterValue("done")}
+                  >
+                    <Image
+                      style={{ width: 16, height: 16 }}
+                      source={require("./assets/done-icon.svg")}
+                    />
+                    <Text
+                      style={[
+                        { color: "#808080" },
+                        filterValue === "done" && { color: "#000" },
+                      ]}
+                    >
+                      Done
+                    </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[
@@ -398,50 +461,38 @@ const App = () => {
                     ]}
                     onPress={() => setFilterValue("favorite")}
                   >
-                    <Text>Favorite</Text>
                     <Image
                       style={{ width: 16, height: 16 }}
                       source={require("./assets/star-icon.svg")}
                     />
+                    <Text
+                      style={[
+                        { color: "#808080" },
+                        filterValue === "favorite" && { color: "#000" },
+                      ]}
+                    >
+                      Favorite
+                    </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[
-                      filterValue === "new" && { backgroundColor: "#eee" },
+                      filterValue === "overdue" && { backgroundColor: "#eee" },
                       filterStyles.filterButton,
                     ]}
-                    onPress={() => setFilterValue("new")}
+                    onPress={() => setFilterValue("overdue")}
                   >
-                    <Text>New</Text>
                     <Image
                       style={{ width: 16, height: 16 }}
-                      source={require("./assets/new-icon.svg")}
+                      source={require("./assets/overdue-icon.svg")}
                     />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[
-                      filterValue === "done" && { backgroundColor: "#eee" },
-                      filterStyles.filterButton,
-                    ]}
-                    onPress={() => setFilterValue("done")}
-                  >
-                    <Text>Done</Text>
-                    <Image
-                      style={{ width: 16, height: 16 }}
-                      source={require("./assets/done-icon.svg")}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[
-                      filterValue === "done" && { backgroundColor: "#eee" },
-                      filterStyles.filterButton,
-                    ]}
-                    onPress={() => setFilterValue("done")}
-                  >
-                    <Text>Done</Text>
-                    <Image
-                      style={{ width: 16, height: 16 }}
-                      source={require("./assets/done-icon.svg")}
-                    />
+                    <Text
+                      style={[
+                        { color: "#808080" },
+                        filterValue === "overdue" && { color: "#000" },
+                      ]}
+                    >
+                      Overdue
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </ScrollView>
@@ -449,7 +500,17 @@ const App = () => {
 
             <View style={taskStyles.list}>
               {chosenTasks.map((item, i, arr) => (
-                <View style={{ zIndex: `${arr.length - i}` }}>
+                <View
+                  style={[
+                    i !== 0 && { zIndex: `${arr.length - i}` },
+                    i === 0 && {
+                      opacity: 0,
+                      visibility: "hidden",
+                      zIndex: -100,
+                      height: 0,
+                    },
+                  ]}
+                >
                   <View style={taskStyles.item}>
                     <View style={taskStyles.leftButtons}>
                       <Checkbox
@@ -467,7 +528,7 @@ const App = () => {
                             { width: 16, height: 16 },
                             !item.description && { display: "none" },
                             collapsedItem === item && {
-                              transform: [{ rotate: "180deg" }],
+                              transform: "rotate(180deg)",
                             },
                           ]}
                           source={require("./assets/arrow-icon.svg")}
@@ -475,7 +536,11 @@ const App = () => {
                       </TouchableOpacity>
                     </View>
                     <View style={taskStyles.container}>
-                      <View style={taskStyles.topRow}>
+                      <ScrollView
+                        horizontal={true}
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={taskStyles.topRow}
+                      >
                         <Text
                           style={[
                             taskStyles.label,
@@ -510,7 +575,11 @@ const App = () => {
                         </Text>
                         <View
                           style={[
-                            taskStyles.label,
+                            {
+                              flexDirection: "row",
+                              alignItems: "center",
+                              gap: 2,
+                            },
                             !item?.favorite && { display: "none" },
                           ]}
                         >
@@ -518,9 +587,13 @@ const App = () => {
                             source={require("./assets/star-icon.svg")}
                             style={{ width: 12, height: 12 }}
                           />
-                          <Text style={{ color: "#808080" }}>favorite</Text>
+                          <Text
+                            style={[taskStyles.label, { color: "#808080" }]}
+                          >
+                            favorite
+                          </Text>
                         </View>
-                      </View>
+                      </ScrollView>
                       <View>
                         <Text style={taskStyles.title}>
                           {item?.name ?? "–"}
@@ -809,6 +882,7 @@ const taskStyles = StyleSheet.create({
     marginBottom: 100,
   },
   item: {
+    minWidth: "80%",
     borderWidth: 1,
     justifyContent: "space-between",
     backgroundColor: "white",
@@ -826,7 +900,7 @@ const taskStyles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     height: 16,
-    gap: 20,
+    gap: 12,
   },
   label: {
     flexDirection: "row",
@@ -834,15 +908,15 @@ const taskStyles = StyleSheet.create({
     gap: 4,
     color: "#808080",
     fontFamily: "RobotoRegular",
-    fontSize: 14,
+    fontSize: 12,
   },
   leftButtons: {
     alignItems: "center",
-    height: 53,
+    height: 51,
     justifyContent: "space-between",
   },
   rightButtons: {
-    height: 53,
+    height: 51,
     justifyContent: "center",
   },
   dotsIcon: {
@@ -854,7 +928,7 @@ const taskStyles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    marginTop: 18,
+    marginTop: 16,
     fontFamily: "RobotoMedium",
     color: "#808080",
   },
