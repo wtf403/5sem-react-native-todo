@@ -22,11 +22,6 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [],
-    "extra": {
-      "eas": {
-        "projectId": "25f68e68-7b48-4cc6-997f-8f859443a99b"
-      }
-    },
     "owner": "wtf403"
   }
 }

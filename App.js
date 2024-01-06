@@ -10,7 +10,6 @@ import {
   ScrollView,
 } from "react-native";
 import Collapsible from "react-native-collapsible";
-import "@expo/match-media";
 import Checkbox from "./components/Checkbox";
 import { EventProvider } from "react-native-outside-press";
 import OutsidePressHandler from "react-native-outside-press";
