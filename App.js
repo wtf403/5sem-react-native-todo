@@ -10,15 +10,12 @@ import {
   ScrollView,
   SafeAreaView,
   Dimensions,
-  TouchableWithoutFeedback,
 } from "react-native";
 import Collapsible from "react-native-collapsible";
 import "@expo/match-media";
 import Checkbox from "./components/Checkbox";
-import {
-  ClickOutsideProvider,
-  useClickOutside,
-} from "react-native-click-outside";
+import { EventProvider } from "react-native-outside-press";
+import OutsidePressHandler from "react-native-outside-press";
 import Select from "./components/Select";
 import Field from "./components/Field";
 import DateTimeModal from "./components/DateTimeModal";
@@ -228,14 +225,12 @@ const App = () => {
 
   const required = !taskTitle || !taskDate || !taskTime;
 
-  const actionsModalRef = useClickOutside(() => setActiveActionsModal(null));
-
   if (!fontsLoaded && !fontError) {
     return null;
   }
 
   return (
-    <ClickOutsideProvider>
+    <EventProvider>
       <SafeAreaView>
         <ScrollView>
           <View style={styles.container} onLayout={onLayoutRootView}>
@@ -548,39 +543,44 @@ const App = () => {
                         />
                       </TouchableOpacity>
 
-                      <View
-                        style={[
-                          activeActionsModal === item
-                            ? null
-                            : { display: "none" },
-                          taskStyles.actionsModal,
-                        ]}
+                      <OutsidePressHandler
+                        disabled={!activeActionsModal}
+                        onOutsidePress={() => setActiveActionsModal(null)}
                       >
-                        <TouchableOpacity
-                          onPress={() => handleToggleFavorite(item)}
-                          style={taskStyles.actionsModalItem}
+                        <View
+                          style={[
+                            activeActionsModal === item
+                              ? null
+                              : { display: "none" },
+                            taskStyles.actionsModal,
+                          ]}
                         >
-                          <Image
-                            style={{ width: 20, height: 20 }}
-                            source={require("./assets/star-icon.svg")}
-                          />
-                          <Text>
-                            {item.favorite
-                              ? "Remove from favorite"
-                              : "Add to favorite"}
-                          </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => handleDeleteTask(item)}
-                          style={taskStyles.actionsModalItem}
-                        >
-                          <Image
-                            style={{ width: 20, height: 20 }}
-                            source={require("./assets/delete-icon.svg")}
-                          />
-                          <Text>Delete</Text>
-                        </TouchableOpacity>
-                      </View>
+                          <TouchableOpacity
+                            onPress={() => handleToggleFavorite(item)}
+                            style={taskStyles.actionsModalItem}
+                          >
+                            <Image
+                              style={{ width: 20, height: 20 }}
+                              source={require("./assets/star-icon.svg")}
+                            />
+                            <Text>
+                              {item.favorite
+                                ? "Remove from favorite"
+                                : "Add to favorite"}
+                            </Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={() => handleDeleteTask(item)}
+                            style={taskStyles.actionsModalItem}
+                          >
+                            <Image
+                              style={{ width: 20, height: 20 }}
+                              source={require("./assets/delete-icon.svg")}
+                            />
+                            <Text>Delete</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </OutsidePressHandler>
                     </View>
                   </View>
                 </View>
@@ -608,26 +608,8 @@ const App = () => {
             type={"time"}
           />
         </ScrollView>
-
-        <TouchableWithoutFeedback onPress={() => setActiveActionsModal(null)}>
-          <View
-            style={[
-              activeActionsModal ? null : { display: "none" },
-              {
-                position: "absolute",
-                backgroundColor: "red",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-              },
-            ]}
-          >
-            Text
-          </View>
-        </TouchableWithoutFeedback>
       </SafeAreaView>
-    </ClickOutsideProvider>
+    </EventProvider>
   );
 };
 
@@ -671,9 +653,6 @@ export const inputStyles = StyleSheet.create({
 });
 
 const styles = StyleSheet.create({
-  durationModal: {
-    backgroundColor: "red",
-  },
   durationPicker: {
     backgroundColor: "blue",
     width: 200,
@@ -895,7 +874,7 @@ const taskStyles = StyleSheet.create({
     borderRadius: 6,
     width: 200,
     height: 90,
-    transform: [{ translateX: -200 }, { translateY: 60 }],
+    transform: [{ translateX: -200 }, { translateY: 25 }],
     left: 15,
     top: -20,
   },
