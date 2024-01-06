@@ -8,7 +8,6 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  ImageBackground,
 } from "react-native";
 import Collapsible from "react-native-collapsible";
 import "@expo/match-media";
@@ -71,7 +70,7 @@ const App = () => {
       type: "Work",
       description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
       done: false,
-      favorite: false,
+      favorite: true,
     },
     {
       name: "Task name",
@@ -639,25 +638,25 @@ const App = () => {
                           onPress={() => handleToggleFavorite(item)}
                           style={taskStyles.actionsModalItem}
                         >
-                          <Image
-                            style={{ width: 20, height: 20 }}
-                            source={require("./assets/star-icon.svg")}
-                          />
                           <Text>
                             {item.favorite
                               ? "Remove from favorite"
                               : "Add to favorite"}
                           </Text>
+                          <Image
+                            style={{ width: 20, height: 20 }}
+                            source={require("./assets/star-icon.svg")}
+                          />
                         </TouchableOpacity>
                         <TouchableOpacity
                           onPress={() => handleDeleteTask(item)}
                           style={taskStyles.actionsModalItem}
                         >
+                          <Text>Delete</Text>
                           <Image
                             style={{ width: 20, height: 20 }}
                             source={require("./assets/delete-icon.svg")}
                           />
-                          <Text>Delete</Text>
                         </TouchableOpacity>
                       </View>
                     </OutsidePressHandler>
