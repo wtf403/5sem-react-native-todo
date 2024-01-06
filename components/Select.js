@@ -27,7 +27,8 @@ const Select = ({
       labelField="label"
       valueField="value"
       placeholder={placeholder}
-      itemContainerStyle={styles.containerStyle}
+      containerStyle={styles.containerStyle}
+      itemContainerStyle={styles.itemContainerStyle}
       itemTextStyle={styles.textStyle}
       renderRightIcon={() => (
         <Image
@@ -70,12 +71,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     userSelect: "none",
     marginStart: 6,
-    fontFamily: "RobotoRegular",
   },
   containerStyle: {
-    marginTop: 6,
+    paddingVertical: 2,
     borderRadius: 4,
     borderColor: "#808080",
+  },
+  itemContainerStyle: {
+    fontFamily: "RobotoRegular",
+    marginVertical: 2,
   },
   textStyle: {
     fontSize: 14,
