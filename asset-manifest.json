@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.js": "/5sem-react-native-todo/static/js/main.3666157b.js",
+    "main.js": "/5sem-react-native-todo/static/js/main.761ae2be.js",
     "static/js/23.2ea3fb6e.js": "/5sem-react-native-todo/static/js/23.2ea3fb6e.js",
     "static/media/Roboto-Light.ttf": "/5sem-react-native-todo/static/media/Roboto-Light.03e629f6348896ffa23a.ttf",
     "static/media/Roboto-Medium.ttf": "/5sem-react-native-todo/static/media/Roboto-Medium.d2d7f0c01bffaa5ec8f7.ttf",
@@ -20,11 +20,11 @@
     "manifest.json": "/5sem-react-native-todo/manifest.json",
     "favicon-16.png": "/5sem-react-native-todo/favicon-16.png",
     "serve.json": "/5sem-react-native-todo/serve.json",
-    "main.3666157b.js.map": "/5sem-react-native-todo/static/js/main.3666157b.js.map",
+    "main.761ae2be.js.map": "/5sem-react-native-todo/static/js/main.761ae2be.js.map",
     "23.2ea3fb6e.js.map": "/5sem-react-native-todo/static/js/23.2ea3fb6e.js.map"
   },
   "entrypoints": [
     "static/js/23.2ea3fb6e.js",
-    "static/js/main.3666157b.js"
+    "static/js/main.761ae2be.js"
   ]
 }
