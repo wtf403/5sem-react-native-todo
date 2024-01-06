@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.js": "/5sem-react-native-todo/static/js/main.60adc115.js",
+    "main.js": "/5sem-react-native-todo/static/js/main.3666157b.js",
     "static/js/23.2ea3fb6e.js": "/5sem-react-native-todo/static/js/23.2ea3fb6e.js",
     "static/media/Roboto-Light.ttf": "/5sem-react-native-todo/static/media/Roboto-Light.03e629f6348896ffa23a.ttf",
     "static/media/Roboto-Medium.ttf": "/5sem-react-native-todo/static/media/Roboto-Medium.d2d7f0c01bffaa5ec8f7.ttf",
@@ -8,21 +8,23 @@
     "favicon.ico": "/5sem-react-native-todo/favicon.ico",
     "static/media/arrow_right.png": "/5sem-react-native-todo/static/media/arrow_right.e8676896fba657b8737b.png",
     "static/media/arrow_left.png": "/5sem-react-native-todo/static/media/arrow_left.d30e48edaec517fafb76.png",
+    "static/media/todo-icon.svg": "/5sem-react-native-todo/static/media/todo-icon.358c183c53d8bcd736e5.svg",
     "static/media/delete-icon.svg": "/5sem-react-native-todo/static/media/delete-icon.2dfdcdff7fcda6158902.svg",
     "index.html": "/5sem-react-native-todo/index.html",
     "static/media/star-icon.svg": "/5sem-react-native-todo/static/media/star-icon.c4a9647ae4beac62e225.svg",
     "static/media/search-icon.svg": "/5sem-react-native-todo/static/media/search-icon.04036839b06553668315.svg",
+    "static/media/overdue-icon.svg": "/5sem-react-native-todo/static/media/overdue-icon.2494ee1453ebc3168e83.svg",
     "static/media/cross-icon.svg": "/5sem-react-native-todo/static/media/cross-icon.bb9f2d7d43d013635dee.svg",
     "static/media/dots-icon.svg": "/5sem-react-native-todo/static/media/dots-icon.5efd2595deb3fac365c8.svg",
     "favicon-32.png": "/5sem-react-native-todo/favicon-32.png",
     "manifest.json": "/5sem-react-native-todo/manifest.json",
     "favicon-16.png": "/5sem-react-native-todo/favicon-16.png",
     "serve.json": "/5sem-react-native-todo/serve.json",
-    "main.60adc115.js.map": "/5sem-react-native-todo/static/js/main.60adc115.js.map",
+    "main.3666157b.js.map": "/5sem-react-native-todo/static/js/main.3666157b.js.map",
     "23.2ea3fb6e.js.map": "/5sem-react-native-todo/static/js/23.2ea3fb6e.js.map"
   },
   "entrypoints": [
     "static/js/23.2ea3fb6e.js",
-    "static/js/main.60adc115.js"
+    "static/js/main.3666157b.js"
   ]
 }
