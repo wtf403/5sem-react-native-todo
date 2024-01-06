@@ -8,7 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  SafeAreaView,
+  ImageBackground,
 } from "react-native";
 import Collapsible from "react-native-collapsible";
 import "@expo/match-media";
@@ -21,10 +21,14 @@ import DateTimeModal from "./components/DateTimeModal";
 import dayjs from "dayjs";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+import Constants from "expo-constants";
 
 SplashScreen.preventAutoHideAsync();
 
 const App = () => {
+  const isWeb = Constants.platform.web;
+  const statusBarHeight = Constants.statusBarHeight;
+
   const [fontsLoaded, fontError] = useFonts({
     RobotoLight: require("./assets/fonts/Roboto-Light.ttf"),
     RobotoMedium: require("./assets/fonts/Roboto-Medium.ttf"),
@@ -87,9 +91,6 @@ const App = () => {
   const [taskDuration, setTaskDuration] = useState("");
   const [taskDate, setTaskDate] = useState("");
   const [taskTime, setTaskTime] = useState("");
-
-  let x = 0;
-  let y = 0;
 
   const handleAddTask = () => {
     if (required) {
@@ -246,442 +247,447 @@ const App = () => {
 
   return (
     <EventProvider>
-      <SafeAreaView>
-        <ScrollView>
-          <View style={styles.container} onLayout={onLayoutRootView}>
-            <View style={styles.header}>
-              <Text style={styles.h1}>Notes</Text>
-              <Text style={styles.subheader}>
-                {dayjs().format("DD.MM.YYYY")}
-              </Text>
-            </View>
-            <View style={styles.addTaskForm}>
-              <Field label="Title" isRequired={true}>
-                <TextInput
-                  value={taskTitle}
-                  onChangeText={(text) => setTaskTitle(text)}
-                  style={styles.input}
-                />
-              </Field>
+      <Image
+        style={[
+          {
+            height: 10,
+            position: "absolute",
+            top: statusBarHeight,
+            left: 0,
+            width: "100%",
+            zIndex: 9999,
+          },
+          isWeb && { display: "none" },
+        ]}
+        source={require("./assets/fade-white.svg")}
+      />
+      <ScrollView fadingEdgeLength={32} style={{ marginTop: statusBarHeight }}>
+        <View style={styles.container} onLayout={onLayoutRootView}>
+          <View style={styles.header}>
+            <Text style={styles.h1}>Notes</Text>
+            <Text style={styles.subheader}>{dayjs().format("DD.MM.YYYY")}</Text>
+          </View>
+          <View style={styles.addTaskForm}>
+            <Field label="Title" isRequired={true}>
+              <TextInput
+                value={taskTitle}
+                onChangeText={(text) => setTaskTitle(text)}
+                style={styles.input}
+              />
+            </Field>
 
-              <Field label="Description" isRequired={false}>
-                <TextInput
-                  multiline={true}
-                  numberOfLines={8}
-                  style={styles.textarea}
-                  value={taskDescription}
-                  onChangeText={(newText) => setTaskDescription(newText)}
-                />
-              </Field>
+            <Field label="Description" isRequired={false}>
+              <TextInput
+                multiline={true}
+                numberOfLines={8}
+                style={styles.textarea}
+                value={taskDescription}
+                onChangeText={(newText) => setTaskDescription(newText)}
+              />
+            </Field>
 
-              <Field label="Date & Time" isRequired={true}>
-                <View style={styles.dateTimePicker}>
-                  <Text style={styles.dateTimePickerText}>
-                    {taskDate !== "" ? taskDate : "dd.mm.yyyy"}{" "}
-                    {taskTime !== "" ? taskTime : "hh:mm"}
-                  </Text>
-                  <View style={styles.dateTimeButtons}>
-                    <TouchableOpacity
-                      style={styles.dateTimeButton}
-                      onPress={() => toggleDateModal(true)}
-                    >
-                      <Text style={styles.dateTimeButtonText}>Date</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.dateTimeButton}
-                      onPress={() => toggleTimeModal(true)}
-                    >
-                      <Text style={styles.dateTimeButtonText}>Time</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </Field>
-
-              <View style={styles.topFormRow}>
-                <Field
-                  style={styles.taskDurationInput}
-                  label="Duration"
-                  isRequired={false}
-                >
-                  <TextInput
-                    value={taskDuration}
-                    onChangeText={(text) => setTaskDuration(text)}
-                    style={styles.input}
-                    placeholder="minutes"
-                    placeholderTextColor={"#808080"}
-                  />
-                </Field>
-
-                <Field
-                  style={styles.taskTypeInput}
-                  label="Type"
-                  isRequired={false}
-                >
-                  <Select
-                    value={taskType}
-                    onTypeChange={setTaskType}
-                    style={styles.taskTypePicker}
-                    options={types}
-                    placeholder="Select task"
-                    rightIconName={"arrow-icon.svg"}
-                  />
-                </Field>
-              </View>
-
-              <TouchableOpacity
-                style={[
-                  styles.button,
-                  required && {
-                    backgroundColor: "whitesmoke",
-                    borderColor: "#eee",
-                  },
-                ]}
-                disabled={!!required}
-                onPress={handleAddTask}
-              >
-                <Text
-                  style={[styles.buttonText, required && { color: "#ccc" }]}
-                >
-                  Add task
+            <Field label="Date & Time" isRequired={true}>
+              <View style={styles.dateTimePicker}>
+                <Text style={styles.dateTimePickerText}>
+                  {taskDate !== "" ? taskDate : "dd.mm.yyyy"}{" "}
+                  {taskTime !== "" ? taskTime : "hh:mm"}
                 </Text>
-              </TouchableOpacity>
-            </View>
+                <View style={styles.dateTimeButtons}>
+                  <TouchableOpacity
+                    style={styles.dateTimeButton}
+                    onPress={() => toggleDateModal(true)}
+                  >
+                    <Text style={styles.dateTimeButtonText}>Date</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.dateTimeButton}
+                    onPress={() => toggleTimeModal(true)}
+                  >
+                    <Text style={styles.dateTimeButtonText}>Time</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Field>
 
-            <View style={filterStyles.container}>
-              <View style={filterStyles.search}>
+            <View style={styles.topFormRow}>
+              <Field
+                style={styles.taskDurationInput}
+                label="Duration"
+                isRequired={false}
+              >
                 <TextInput
-                  value={searchValue}
-                  onChangeText={(text) => setSearchValue(text)}
-                  style={filterStyles.searchInput}
-                  placeholder="Search"
+                  value={taskDuration}
+                  onChangeText={(text) => setTaskDuration(text)}
+                  style={styles.input}
+                  placeholder="minutes"
                   placeholderTextColor={"#808080"}
                 />
-                <Image
-                  style={filterStyles.searchIcon}
-                  source={require("./assets/search-icon.svg")}
-                />
-                <View
-                  style={[
-                    !!searchValue ? null : { display: "none" },
-                    filterStyles.crossIcon,
-                  ]}
-                >
-                  <TouchableOpacity onPress={() => setSearchValue("")}>
-                    <Image
-                      style={[{ width: 16, height: 16 }]}
-                      source={require("./assets/cross-icon.svg")}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
+              </Field>
 
-              <View style={filterStyles.sortingContainer}>
-                <Select
-                  style={filterStyles.sorting}
-                  options={sortTypes}
-                  onTypeChange={setSortingValue}
-                  value={sortingValue}
-                  rightIconName={"sort-icon.svg"}
-                  placeholder={sortingValue}
-                />
-              </View>
-
-              <ScrollView
-                showsHorizontalScrollIndicator={false}
-                showsVerticalScrollIndicator={false}
-                horizontal={true}
+              <Field
+                style={styles.taskTypeInput}
+                label="Type"
+                isRequired={false}
               >
-                <View style={filterStyles.filterContainer}>
-                  <TouchableOpacity
-                    style={[
-                      filterValue === "all" && { backgroundColor: "#eee" },
-                      filterStyles.filterButton,
-                    ]}
-                    onPress={() => setFilterValue("all")}
-                  >
-                    <Image
-                      style={{ width: 16, height: 16 }}
-                      source={require("./assets/all-icon.svg")}
-                    />
-                    <Text
-                      style={[
-                        { color: "#808080" },
-                        filterValue === "all" && { color: "#000" },
-                      ]}
-                    >
-                      All
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[
-                      filterValue === "todo" && { backgroundColor: "#eee" },
-                      filterStyles.filterButton,
-                    ]}
-                    onPress={() => setFilterValue("todo")}
-                  >
-                    <Image
-                      style={{ width: 16, height: 16 }}
-                      source={require("./assets/todo-icon.svg")}
-                    />
-                    <Text
-                      style={[
-                        { color: "#808080" },
-                        filterValue === "todo" && { color: "#000" },
-                      ]}
-                    >
-                      TODO
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[
-                      filterValue === "done" && { backgroundColor: "#eee" },
-                      filterStyles.filterButton,
-                    ]}
-                    onPress={() => setFilterValue("done")}
-                  >
-                    <Image
-                      style={{ width: 16, height: 16 }}
-                      source={require("./assets/done-icon.svg")}
-                    />
-                    <Text
-                      style={[
-                        { color: "#808080" },
-                        filterValue === "done" && { color: "#000" },
-                      ]}
-                    >
-                      Done
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[
-                      filterValue === "favorite" && {
-                        backgroundColor: "#eee",
-                      },
-                      filterStyles.filterButton,
-                    ]}
-                    onPress={() => setFilterValue("favorite")}
-                  >
-                    <Image
-                      style={{ width: 16, height: 16 }}
-                      source={require("./assets/star-icon.svg")}
-                    />
-                    <Text
-                      style={[
-                        { color: "#808080" },
-                        filterValue === "favorite" && { color: "#000" },
-                      ]}
-                    >
-                      Favorite
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[
-                      filterValue === "overdue" && { backgroundColor: "#eee" },
-                      filterStyles.filterButton,
-                    ]}
-                    onPress={() => setFilterValue("overdue")}
-                  >
-                    <Image
-                      style={{ width: 16, height: 16 }}
-                      source={require("./assets/overdue-icon.svg")}
-                    />
-                    <Text
-                      style={[
-                        { color: "#808080" },
-                        filterValue === "overdue" && { color: "#000" },
-                      ]}
-                    >
-                      Overdue
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </ScrollView>
+                <Select
+                  value={taskType}
+                  onTypeChange={setTaskType}
+                  style={styles.taskTypePicker}
+                  options={types}
+                  placeholder="Select task"
+                  rightIconName={"arrow-icon.svg"}
+                />
+              </Field>
             </View>
 
-            <View style={taskStyles.list}>
-              {chosenTasks.map((item, i, arr) => (
-                <View
-                  style={[
-                    i !== 0 && { zIndex: `${arr.length - i}` },
-                    i === 0 && {
-                      opacity: 0,
-                      visibility: "hidden",
-                      zIndex: -100,
-                      height: 0,
-                    },
-                  ]}
-                >
-                  <View style={taskStyles.item}>
-                    <View style={taskStyles.leftButtons}>
-                      <Checkbox
-                        checked={item?.done}
-                        onToggleChecked={() => handleCheckTask(item)}
-                        style={styles.checkbox}
-                      />
-                      <TouchableOpacity
-                        onPress={() =>
-                          setCollapsedItem(!!collapsedItem ? null : item)
-                        }
-                      >
-                        <Image
-                          style={[
-                            { width: 16, height: 16 },
-                            !item.description && { display: "none" },
-                            collapsedItem === item && {
-                              transform: "rotate(180deg)",
-                            },
-                          ]}
-                          source={require("./assets/arrow-icon.svg")}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                    <View style={taskStyles.container}>
-                      <ScrollView
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={taskStyles.topRow}
-                      >
-                        <Text
-                          style={[
-                            taskStyles.label,
-                            !item?.date && { display: "none" },
-                          ]}
-                        >
-                          {item?.date ?? "–"}
-                        </Text>
-                        <Text
-                          style={[
-                            taskStyles.label,
-                            !item?.time && { display: "none" },
-                          ]}
-                        >
-                          {item?.time ?? "–"}
-                        </Text>
-                        <Text
-                          style={[
-                            taskStyles.label,
-                            !item?.type && { display: "none" },
-                          ]}
-                        >
-                          {item?.type ?? "–"}
-                        </Text>
-                        <Text
-                          style={[
-                            taskStyles.label,
-                            !item?.duration && { display: "none" },
-                          ]}
-                        >
-                          {item?.duration ?? "–"} minutes
-                        </Text>
-                        <View
-                          style={[
-                            {
-                              flexDirection: "row",
-                              alignItems: "center",
-                              gap: 2,
-                            },
-                            !item?.favorite && { display: "none" },
-                          ]}
-                        >
-                          <Image
-                            source={require("./assets/star-icon.svg")}
-                            style={{ width: 12, height: 12 }}
-                          />
-                          <Text
-                            style={[taskStyles.label, { color: "#808080" }]}
-                          >
-                            favorite
-                          </Text>
-                        </View>
-                      </ScrollView>
-                      <View>
-                        <Text style={taskStyles.title}>
-                          {item?.name ?? "–"}
-                        </Text>
-                      </View>
-                      <Collapsible collapsed={!(collapsedItem === item)}>
-                        <Text style={taskStyles.description}>
-                          {item?.description ?? "–"}
-                        </Text>
-                      </Collapsible>
-                    </View>
-                    <View style={taskStyles.rightButtons}>
-                      <TouchableOpacity
-                        style={taskStyles.actionsModalButton}
-                        onPress={() => setActiveActionsModal(item)}
-                      >
-                        <Image
-                          style={taskStyles.dotsIcon}
-                          source={require("./assets/dots-icon.svg")}
-                        />
-                      </TouchableOpacity>
-
-                      <OutsidePressHandler
-                        disabled={!activeActionsModal}
-                        onOutsidePress={() => setActiveActionsModal(null)}
-                      >
-                        <View
-                          style={[
-                            activeActionsModal === item
-                              ? null
-                              : { display: "none" },
-                            taskStyles.actionsModal,
-                          ]}
-                        >
-                          <TouchableOpacity
-                            onPress={() => handleToggleFavorite(item)}
-                            style={taskStyles.actionsModalItem}
-                          >
-                            <Image
-                              style={{ width: 20, height: 20 }}
-                              source={require("./assets/star-icon.svg")}
-                            />
-                            <Text>
-                              {item.favorite
-                                ? "Remove from favorite"
-                                : "Add to favorite"}
-                            </Text>
-                          </TouchableOpacity>
-                          <TouchableOpacity
-                            onPress={() => handleDeleteTask(item)}
-                            style={taskStyles.actionsModalItem}
-                          >
-                            <Image
-                              style={{ width: 20, height: 20 }}
-                              source={require("./assets/delete-icon.svg")}
-                            />
-                            <Text>Delete</Text>
-                          </TouchableOpacity>
-                        </View>
-                      </OutsidePressHandler>
-                    </View>
-                  </View>
-                </View>
-              ))}
-            </View>
+            <TouchableOpacity
+              style={[
+                styles.button,
+                required && {
+                  backgroundColor: "whitesmoke",
+                  borderColor: "#eee",
+                },
+              ]}
+              disabled={!!required}
+              onPress={handleAddTask}
+            >
+              <Text style={[styles.buttonText, required && { color: "#ccc" }]}>
+                Add task
+              </Text>
+            </TouchableOpacity>
           </View>
 
-          <DateTimeModal
-            visible={isDateModalOpen}
-            dateTime={modalDate}
-            onDateTimeChange={setModalDate}
-            onClose={() => toggleDateModal(false)}
-            onSubmit={handleAddDate}
-            style={[isDateModalOpen ? null : { display: "none" }]}
-            type={"date"}
-          />
+          <View style={filterStyles.container}>
+            <View style={filterStyles.search}>
+              <TextInput
+                value={searchValue}
+                onChangeText={(text) => setSearchValue(text)}
+                style={filterStyles.searchInput}
+                placeholder="Search"
+                placeholderTextColor={"#808080"}
+              />
+              <Image
+                style={filterStyles.searchIcon}
+                source={require("./assets/search-icon.svg")}
+              />
+              <View
+                style={[
+                  !!searchValue ? null : { display: "none" },
+                  filterStyles.crossIcon,
+                ]}
+              >
+                <TouchableOpacity onPress={() => setSearchValue("")}>
+                  <Image
+                    style={[{ width: 16, height: 16 }]}
+                    source={require("./assets/cross-icon.svg")}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
 
-          <DateTimeModal
-            visible={isTimeModalOpen}
-            dateTime={modalTime}
-            onDateTimeChange={setModalTime}
-            onClose={() => toggleTimeModal(false)}
-            onSubmit={handleAddTime}
-            style={[isTimeModalOpen ? null : { display: "none" }]}
-            type={"time"}
-          />
-        </ScrollView>
-      </SafeAreaView>
+            <View style={filterStyles.sortingContainer}>
+              <Select
+                style={filterStyles.sorting}
+                options={sortTypes}
+                onTypeChange={setSortingValue}
+                value={sortingValue}
+                rightIconName={"sort-icon.svg"}
+                placeholder={sortingValue}
+              />
+            </View>
+
+            <ScrollView
+              showsHorizontalScrollIndicator={false}
+              showsVerticalScrollIndicator={false}
+              horizontal={true}
+            >
+              <View style={filterStyles.filterContainer}>
+                <TouchableOpacity
+                  style={[
+                    filterValue === "all" && { backgroundColor: "#eee" },
+                    filterStyles.filterButton,
+                  ]}
+                  onPress={() => setFilterValue("all")}
+                >
+                  <Image
+                    style={{ width: 16, height: 16 }}
+                    source={require("./assets/all-icon.svg")}
+                  />
+                  <Text
+                    style={[
+                      { color: "#808080" },
+                      filterValue === "all" && { color: "#000" },
+                    ]}
+                  >
+                    All
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    filterValue === "todo" && { backgroundColor: "#eee" },
+                    filterStyles.filterButton,
+                  ]}
+                  onPress={() => setFilterValue("todo")}
+                >
+                  <Image
+                    style={{ width: 16, height: 16 }}
+                    source={require("./assets/todo-icon.svg")}
+                  />
+                  <Text
+                    style={[
+                      { color: "#808080" },
+                      filterValue === "todo" && { color: "#000" },
+                    ]}
+                  >
+                    TODO
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    filterValue === "done" && { backgroundColor: "#eee" },
+                    filterStyles.filterButton,
+                  ]}
+                  onPress={() => setFilterValue("done")}
+                >
+                  <Image
+                    style={{ width: 16, height: 16 }}
+                    source={require("./assets/done-icon.svg")}
+                  />
+                  <Text
+                    style={[
+                      { color: "#808080" },
+                      filterValue === "done" && { color: "#000" },
+                    ]}
+                  >
+                    Done
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    filterValue === "favorite" && {
+                      backgroundColor: "#eee",
+                    },
+                    filterStyles.filterButton,
+                  ]}
+                  onPress={() => setFilterValue("favorite")}
+                >
+                  <Image
+                    style={{ width: 16, height: 16 }}
+                    source={require("./assets/star-icon.svg")}
+                  />
+                  <Text
+                    style={[
+                      { color: "#808080" },
+                      filterValue === "favorite" && { color: "#000" },
+                    ]}
+                  >
+                    Favorite
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    filterValue === "overdue" && { backgroundColor: "#eee" },
+                    filterStyles.filterButton,
+                  ]}
+                  onPress={() => setFilterValue("overdue")}
+                >
+                  <Image
+                    style={{ width: 16, height: 16 }}
+                    source={require("./assets/overdue-icon.svg")}
+                  />
+                  <Text
+                    style={[
+                      { color: "#808080" },
+                      filterValue === "overdue" && { color: "#000" },
+                    ]}
+                  >
+                    Overdue
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          </View>
+
+          <View style={taskStyles.list}>
+            {chosenTasks.map((item, i, arr) => (
+              <View
+                key="item.date + item.time + item.name"
+                style={[
+                  i !== 0 && { zIndex: `${arr.length - i}` },
+                  i === 0 && {
+                    opacity: 0,
+                    visibility: "hidden",
+                    zIndex: -100,
+                    height: 0,
+                  },
+                ]}
+              >
+                <View style={taskStyles.item}>
+                  <View style={taskStyles.leftButtons}>
+                    <Checkbox
+                      checked={item?.done}
+                      onToggleChecked={() => handleCheckTask(item)}
+                      style={styles.checkbox}
+                    />
+                    <TouchableOpacity
+                      onPress={() =>
+                        setCollapsedItem(!!collapsedItem ? null : item)
+                      }
+                    >
+                      <Image
+                        style={[
+                          { width: 16, height: 16 },
+                          !item.description && { display: "none" },
+                          collapsedItem === item && {
+                            transform: "rotate(180deg)",
+                          },
+                        ]}
+                        source={require("./assets/arrow-icon.svg")}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <View style={taskStyles.container}>
+                    <ScrollView
+                      horizontal={true}
+                      showsHorizontalScrollIndicator={false}
+                      contentContainerStyle={taskStyles.topRow}
+                    >
+                      <Text
+                        style={[
+                          taskStyles.label,
+                          !item?.date && { display: "none" },
+                        ]}
+                      >
+                        {item?.date ?? "–"}
+                      </Text>
+                      <Text
+                        style={[
+                          taskStyles.label,
+                          !item?.time && { display: "none" },
+                        ]}
+                      >
+                        {item?.time ?? "–"}
+                      </Text>
+                      <Text
+                        style={[
+                          taskStyles.label,
+                          !item?.type && { display: "none" },
+                        ]}
+                      >
+                        {item?.type ?? "–"}
+                      </Text>
+                      <Text
+                        style={[
+                          taskStyles.label,
+                          !item?.duration && { display: "none" },
+                        ]}
+                      >
+                        {item?.duration ?? "–"} minutes
+                      </Text>
+                      <View
+                        style={[
+                          {
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 2,
+                          },
+                          !item?.favorite && { display: "none" },
+                        ]}
+                      >
+                        <Image
+                          source={require("./assets/star-icon.svg")}
+                          style={{ width: 12, height: 12 }}
+                        />
+                        <Text style={[taskStyles.label, { color: "#808080" }]}>
+                          favorite
+                        </Text>
+                      </View>
+                    </ScrollView>
+                    <View>
+                      <Text style={taskStyles.title}>{item?.name ?? "–"}</Text>
+                    </View>
+                    <Collapsible collapsed={!(collapsedItem === item)}>
+                      <Text style={taskStyles.description}>
+                        {item?.description ?? "–"}
+                      </Text>
+                    </Collapsible>
+                  </View>
+                  <View style={taskStyles.rightButtons}>
+                    <TouchableOpacity
+                      style={taskStyles.actionsModalButton}
+                      onPress={() => setActiveActionsModal(item)}
+                    >
+                      <Image
+                        style={taskStyles.dotsIcon}
+                        source={require("./assets/dots-icon.svg")}
+                      />
+                    </TouchableOpacity>
+
+                    <OutsidePressHandler
+                      disabled={!activeActionsModal}
+                      onOutsidePress={() => setActiveActionsModal(null)}
+                    >
+                      <View
+                        style={[
+                          activeActionsModal === item
+                            ? null
+                            : { display: "none" },
+                          taskStyles.actionsModal,
+                        ]}
+                      >
+                        <TouchableOpacity
+                          onPress={() => handleToggleFavorite(item)}
+                          style={taskStyles.actionsModalItem}
+                        >
+                          <Image
+                            style={{ width: 20, height: 20 }}
+                            source={require("./assets/star-icon.svg")}
+                          />
+                          <Text>
+                            {item.favorite
+                              ? "Remove from favorite"
+                              : "Add to favorite"}
+                          </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => handleDeleteTask(item)}
+                          style={taskStyles.actionsModalItem}
+                        >
+                          <Image
+                            style={{ width: 20, height: 20 }}
+                            source={require("./assets/delete-icon.svg")}
+                          />
+                          <Text>Delete</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </OutsidePressHandler>
+                  </View>
+                </View>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        <DateTimeModal
+          visible={isDateModalOpen}
+          dateTime={modalDate}
+          onDateTimeChange={setModalDate}
+          onClose={() => toggleDateModal(false)}
+          onSubmit={handleAddDate}
+          style={[isDateModalOpen ? null : { display: "none" }]}
+          type={"date"}
+        />
+
+        <DateTimeModal
+          visible={isTimeModalOpen}
+          dateTime={modalTime}
+          onDateTimeChange={setModalTime}
+          onClose={() => toggleTimeModal(false)}
+          onSubmit={handleAddTime}
+          style={[isTimeModalOpen ? null : { display: "none" }]}
+          type={"time"}
+        />
+      </ScrollView>
     </EventProvider>
   );
 };
